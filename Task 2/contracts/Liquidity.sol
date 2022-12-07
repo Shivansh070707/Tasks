@@ -1,6 +1,28 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.7;
 
+interface IUniswapV2Pair {
+    event Approval(address indexed owner, address indexed spender, uint value);
+    event Transfer(address indexed from, address indexed to, uint value);
+
+    event Mint(address indexed sender, uint amount0, uint amount1);
+    event Burn(
+        address indexed sender,
+        uint amount0,
+        uint amount1,
+        address indexed to
+    );
+    event Swap(
+        address indexed sender,
+        uint amount0In,
+        uint amount1In,
+        uint amount0Out,
+        uint amount1Out,
+        address indexed to
+    );
+    event Sync(uint112 reserve0, uint112 reserve1);
+}
+
 interface IUniswapV2Router {
     function swapExactETHForTokens(
         uint amountOutMin,
@@ -62,7 +84,7 @@ interface IERC20 {
     function balanceOf(address account) external view returns (uint);
 }
 
-contract UniswapV2SwapExamples {
+contract UniswapV2SwapExamples is IUniswapV2Pair {
     address private constant _UNISWAP_V2_ROUTER =
         0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D;
     address private constant _FACTORY =
@@ -71,6 +93,7 @@ contract UniswapV2SwapExamples {
     address private immutable _gld;
     IUniswapV2Router private _router = IUniswapV2Router(_UNISWAP_V2_ROUTER);
     event AddLiquidity(uint amountA, uint amountB, uint liquidity);
+    event RemoveLiquidity(uint amountA, uint amountB, uint liquidityBurned);
 
     constructor(address sil, address gld) {
         _sil = sil;
@@ -96,15 +119,20 @@ contract UniswapV2SwapExamples {
             address(this),
             block.timestamp
         );
+        address pair = IUniswapV2Factory(_FACTORY).getPair(_sil, _gld);
+        IERC20(pair).transfer(msg.sender, liquidity);
         emit AddLiquidity(amountA, amountB, liquidity);
     }
 
     function removeLiquidity(
         address _tokenA,
-        address _tokenB
+        address _tokenB,
+        uint liquidity
     ) external returns (uint amountA, uint amountB) {
         address pair = IUniswapV2Factory(_FACTORY).getPair(_tokenA, _tokenB);
-        uint liquidity = IERC20(pair).balanceOf(address(this));
+        uint balance = IERC20(pair).balanceOf(msg.sender);
+        require(balance > liquidity, "Insufficient Liquidity");
+        IERC20(pair).transferFrom(msg.sender, address(this), liquidity);
         IERC20(pair).approve(_UNISWAP_V2_ROUTER, liquidity);
         (amountA, amountB) = _router.removeLiquidity(
             _tokenA,
@@ -115,5 +143,23 @@ contract UniswapV2SwapExamples {
             address(this),
             block.timestamp
         );
+        IERC20(_tokenA).transfer(msg.sender, amountA);
+        IERC20(_tokenB).transfer(msg.sender, amountB);
+        emit RemoveLiquidity(amountA, amountB, liquidity);
+    }
+
+    function getPair(
+        address _tokenA,
+        address _tokenB
+    ) public view returns (address pair) {
+        pair = IUniswapV2Factory(_FACTORY).getPair(_tokenA, _tokenB);
+    }
+
+    function getLiquidityBalance(
+        address _tokenA,
+        address _tokenB
+    ) public view returns (uint liquidity) {
+        address pair = getPair(_tokenA, _tokenB);
+        liquidity = IERC20(pair).balanceOf(msg.sender);
     }
 }
