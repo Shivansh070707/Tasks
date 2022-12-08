@@ -4,18 +4,19 @@ const Uniswap = require("../Build/Uniswap.json");
 
 async function main() {
   await hre.run("verify:verify", {
+    contract: "contracts/Tokens.sol:Gold",
     address: Gold.address,
-    constructorArguments: [Gold.abi],
   });
 
   await hre.run("verify:verify", {
+    contract: "contracts/Tokens.sol:Silver",
     address: Silver.address,
-    constructorArguments: [Silver.abi],
   });
 
   await hre.run("verify:verify", {
+    contract: "contracts/Liquidity.sol:Liquidity",
     address: Uniswap.address,
-    constructorArguments: [Uniswap.abi],
+    constructorArguments: [Silver.address, Gold.address],
   });
 }
 main().catch((error) => {
