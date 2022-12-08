@@ -1,54 +1,58 @@
 const { ethers } = require("hardhat");
 const fs = require("fs");
 
-fs.mkdir("Build", (err) => {
+fs.mkdir("build", (err) => {
   if (err) console.log(err);
   console.log("File created");
 });
 
 async function main() {
   const GOLD = await ethers.getContractFactory("Gold");
-  const Gold = await GOLD.deploy();
+  const gold = await GOLD.deploy();
+  await gold.deployed();
 
   const SILVER = await ethers.getContractFactory("Silver");
-  const Silver = await SILVER.deploy();
+  const silver = await SILVER.deploy();
+  await silver.deployed();
 
-  const UNISWAP = await ethers.getContractFactory("UniswapV2SwapExamples");
-  const Uniswap = await UNISWAP.deploy(Silver.address, Gold.address);
+  const UNISWAP = await ethers.getContractFactory("Liquidity");
+  const uniswap = await UNISWAP.deploy(silver.address, gold.address);
+  await uniswap.deployed();
 
   let GoldData = {
-    address: Gold.address,
+    address: gold.address,
     network: {
-      name: Gold.provider._network.name,
-      chainId: Gold.provider._network.chainId,
+      name: gold.provider._network.name,
+      chainId: gold.provider._network.chainId,
     },
-    abi: JSON.parse(Gold.interface.format("json")),
+    abi: JSON.parse(gold.interface.format("json")),
   };
-  fs.writeFileSync("Build/Gold.json", JSON.stringify(GoldData, null, "\t"));
+  fs.writeFileSync("build/Gold.json", JSON.stringify(GoldData, null, "\t"));
 
   let SilverData = {
-    address: Silver.address,
+    address: silver.address,
     network: {
-      name: Silver.provider._network.name,
-      chainId: Silver.provider._network.chainId,
+      name: silver.provider._network.name,
+      chainId: silver.provider._network.chainId,
     },
-    abi: JSON.parse(Silver.interface.format("json")),
+    abi: JSON.parse(silver.interface.format("json")),
   };
-  fs.writeFileSync("Build/Silver.json", JSON.stringify(SilverData, null, "\t"));
+  fs.writeFileSync("build/Silver.json", JSON.stringify(SilverData, null, "\t"));
 
   let UniswapData = {
-    address: Uniswap.address,
+    address: uniswap.address,
     network: {
-      name: Uniswap.provider._network.name,
-      chainId: Uniswap.provider._network.chainId,
+      name: uniswap.provider._network.name,
+      chainId: uniswap.provider._network.chainId,
     },
-    abi: JSON.parse(Uniswap.interface.format("json")),
+    abi: JSON.parse(uniswap.interface.format("json")),
   };
   fs.writeFileSync(
-    "Build/Uniswap.json",
+    "build/Uniswap.json",
     JSON.stringify(UniswapData, null, "\t")
   );
 }
+
 main().catch((error) => {
   console.error(error);
   process.exitCode = 1;

@@ -1,27 +1,27 @@
 const { ethers } = require("hardhat");
-const gold = require("../Build/Gold.json");
-const silver = require("../Build/Silver.json");
-const uniswap = require("../Build/Uniswap.json");
+const Gold = require("../Build/Gold.json");
+const Silver = require("../Build/Silver.json");
+const Uniswap = require("../Build/Uniswap.json");
 
 async function main() {
-  const Gold = await ethers.getContractAt(gold.abi, gold.address);
+  const gold = await ethers.getContractAt(Gold.abi, Gold.address);
 
-  const Silver = await ethers.getContractAt(silver.abi, silver.address);
+  const silver = await ethers.getContractAt(Silver.abi, Silver.address);
 
-  const Add = await ethers.getContractAt(uniswap.abi, uniswap.address);
+  const add = await ethers.getContractAt(Uniswap.abi, Uniswap.address);
 
-  await Gold.approve(Add.address, 100000000);
-  await Silver.approve(Add.address, 1500000000);
-  const tx = await Add.addLiquidity(10000, 150000);
+  await gold.approve(add.address, 100000000);
+  await silver.approve(add.address, 1500000000);
+  const tx = await add.addLiquidity(10000, 150000);
   const tx_receipt = await tx.wait();
 
   console.log(` ${tx_receipt.events[14].args[2].toNumber()} Added Liquidity `);
-  const pair = await Add.getPair(Gold.address, Silver.address);
-  const Pair = await ethers.getContractAt("IERC20_", pair);
+  const pair = await add.getPair(gold.address, silver.address);
+  const Pair = await ethers.getContractAt("IERC20", pair);
   console.log(Pair.address);
-  await Pair.approve(Add.address, 1000);
+  await Pair.approve(add.address, 1000);
 
-  const tx1 = await Add.removeLiquidity(Gold.address, Silver.address, 1000);
+  const tx1 = await add.removeLiquidity(gold.address, silver.address, 1000);
   const tx1_receipt = await tx1.wait();
 
   const liquidity = tx1_receipt.events[10].args[2].toNumber();
