@@ -34,8 +34,12 @@ describe("Liquidity", function () {
   });
   describe("liquidity", function () {
     it("should add liquidity", async function () {
-      await gold.connect(owner).approve(add.address, 100000000);
-      await silver.connect(owner).approve(add.address, 1500000000);
+      await gold
+        .connect(owner)
+        .approve(add.address, ethers.utils.parseEther("100000000"));
+      await silver
+        .connect(owner)
+        .approve(add.address, ethers.utils.parseEther("1500000000"));
       const tx = await add.connect(owner).addLiquidity(10000, 150000);
       const tx_receipt = await tx.wait();
 

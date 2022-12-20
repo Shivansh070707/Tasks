@@ -10,8 +10,8 @@ async function main() {
 
   const add = await ethers.getContractAt(Uniswap.abi, Uniswap.address);
 
-  await gold.approve(add.address, 100000000);
-  await silver.approve(add.address, 1500000000);
+  await gold.approve(add.address, ethers.utils.parseEther("100000000"));
+  await silver.approve(add.address, ethers.utils.parseEther("1500000000"));
   const tx = await add.addLiquidity(10000, 150000);
   const tx_receipt = await tx.wait();
 
