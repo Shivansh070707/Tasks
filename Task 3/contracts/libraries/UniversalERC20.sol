@@ -1,4 +1,5 @@
-pragma solidity ^0.6.12;
+// SPDX-License-Identifier: MIT
+pragma solidity 0.6.12;
 
 import "./SafeMath.sol";
 import "../interfaces/IERC20.sol";
@@ -56,9 +57,10 @@ library UniversalERC20 {
         }
     }
 
-    function universalTransferFromSenderToThis(IERC20 token, uint256 amount)
-        internal
-    {
+    function universalTransferFromSenderToThis(
+        IERC20 token,
+        uint256 amount
+    ) internal {
         if (amount == 0) {
             return;
         }
@@ -94,11 +96,10 @@ library UniversalERC20 {
         }
     }
 
-    function universalBalanceOf(IERC20 token, address who)
-        internal
-        view
-        returns (uint256)
-    {
+    function universalBalanceOf(
+        IERC20 token,
+        address who
+    ) internal view returns (uint256) {
         if (isETH(token)) {
             return who.balance;
         } else {
@@ -111,10 +112,9 @@ library UniversalERC20 {
             return 18;
         }
 
-        (bool success, bytes memory data) =
-            address(token).staticcall.gas(10000)(
-                abi.encodeWithSignature("decimals()")
-            );
+        (bool success, bytes memory data) = address(token).staticcall.gas(
+            10000
+        )(abi.encodeWithSignature("decimals()"));
         if (!success || data.length == 0) {
             (success, data) = address(token).staticcall.gas(10000)(
                 abi.encodeWithSignature("DECIMALS()")

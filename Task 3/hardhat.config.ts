@@ -1,17 +1,18 @@
+import "hardhat-contract-sizer";
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
 
-import("hardhat-contract-sizer");
 import * as dotenv from "dotenv";
 dotenv.config();
 const { ALCHEMY_API_KEY, GOERLI_API_KEY } = process.env;
 
 /** @type import('hardhat/config').HardhatUserConfig */
+
 const config: HardhatUserConfig = {
   solidity: {
     compilers: [
       {
-        version: "0.8.14",
+        version: "0.8.12",
         settings: {
           optimizer: {
             enabled: true,

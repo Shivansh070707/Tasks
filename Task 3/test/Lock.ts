@@ -1,124 +1,138 @@
-import { time, loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { anyValue } from "@nomicfoundation/hardhat-chai-matchers/withArgs";
 import { expect } from "chai";
-import { ethers } from "hardhat";
+import { ethers, network } from "hardhat";
 
-describe("Lock", function () {
-  // We define a fixture to reuse the same setup in every test.
-  // We use loadFixture to run this setup once, snapshot that state,
-  // and reset Hardhat Network to that snapshot in every test.
-  async function deployOneYearLockFixture() {
-    const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
-    const ONE_GWEI = 1_000_000_000;
-
-    const lockedAmount = ONE_GWEI;
-    const unlockTime = (await time.latest()) + ONE_YEAR_IN_SECS;
-
-    // Contracts are deployed using the first signer/account by default
-    const [owner, otherAccount] = await ethers.getSigners();
-
-    const Lock = await ethers.getContractFactory("Lock");
-    const lock = await Lock.deploy(unlockTime, { value: lockedAmount });
-
-    return { lock, unlockTime, lockedAmount, owner, otherAccount };
-  }
-
-  describe("Deployment", function () {
-    it("Should set the right unlockTime", async function () {
-      const { lock, unlockTime } = await loadFixture(deployOneYearLockFixture);
-
-      expect(await lock.unlockTime()).to.equal(unlockTime);
+describe("Test", function () {
+  let matic,
+    bitcoin,
+    autoV2,
+    farmA,
+    farmB,
+    owner,
+    otherAccount,
+    stratA,
+    add,
+    want,
+    reward;
+  before(async function () {
+    const address = "0xF977814e90dA44bFA03b6295A0616a897441aceC";
+    await network.provider.request({
+      method: "hardhat_impersonateAccount",
+      params: [address],
     });
 
-    it("Should set the right owner", async function () {
-      const { lock, owner } = await loadFixture(deployOneYearLockFixture);
+    owner = ethers.provider.getSigner(address);
 
-      expect(await lock.owner()).to.equal(owner.address);
-    });
+    [reward, otherAccount] = await ethers.getSigners();
 
-    it("Should receive and store the funds to lock", async function () {
-      const { lock, lockedAmount } = await loadFixture(
-        deployOneYearLockFixture
-      );
+    const MATIC = await ethers.getContractFactory("Matic");
+    matic = await MATIC.connect(owner).deploy();
 
-      expect(await ethers.provider.getBalance(lock.address)).to.equal(
-        lockedAmount
-      );
-    });
+    const BITCOIN = await ethers.getContractFactory("Bitcoin");
+    bitcoin = await BITCOIN.connect(owner).deploy();
 
-    it("Should fail if the unlockTime is not in the future", async function () {
-      // We don't use the fixture here because we want a different deployment
-      const latestTime = await time.latest();
-      const Lock = await ethers.getContractFactory("Lock");
-      await expect(Lock.deploy(latestTime, { value: 1 })).to.be.revertedWith(
-        "Unlock time should be in the future"
-      );
-    });
+    const AUTOV2 = await ethers.getContractFactory("AUTOv2");
+    autoV2 = await AUTOV2.connect(owner).deploy();
+
+    const FARMA = await ethers.getContractFactory("AutoFarmV2");
+    farmA = await FARMA.connect(owner).deploy(autoV2.address);
+
+    const FARMB = await ethers.getContractFactory("AutoFarmV2");
+    farmB = await FARMB.connect(owner).deploy(autoV2.address);
+
+    const ADD = await ethers.getContractFactory("Liquidity");
+    add = await ADD.connect(owner).deploy();
+    await matic
+      .connect(owner)
+      .approve(add.address, ethers.utils.parseEther("100000000"));
+    await bitcoin
+      .connect(owner)
+      .approve(add.address, ethers.utils.parseEther("1500000000"));
+    const tx = await add
+      .connect(owner)
+      .addLiquidity(matic.address, bitcoin.address, 10000, 150000);
+    const tx_receipt = await tx.wait();
+
+    const wantaddress = await add.getPair(matic.address, bitcoin.address);
+    want = await ethers.getContractAt("IERC20", wantaddress);
+
+    const StratA = await ethers.getContractFactory("StratX2_PCS");
+    stratA = await StratA.connect(owner).deploy(
+      [
+        "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+        owner._address,
+        farmA.address,
+        autoV2.address,
+        want.address,
+        matic.address,
+        bitcoin.address,
+        "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+        farmB.address,
+        "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
+        reward.address,
+        "0x000000000000000000000000000000000000dEaD",
+      ],
+      0,
+      false,
+      false,
+      true,
+      [],
+      [],
+      [],
+      [],
+      [],
+      70,
+      150,
+      9990,
+      10000
+    );
   });
-
-  describe("Withdrawals", function () {
-    describe("Validations", function () {
-      it("Should revert with the right error if called too soon", async function () {
-        const { lock } = await loadFixture(deployOneYearLockFixture);
-
-        await expect(lock.withdraw()).to.be.revertedWith(
-          "You can't withdraw yet"
-        );
-      });
-
-      it("Should revert with the right error if called from another account", async function () {
-        const { lock, unlockTime, otherAccount } = await loadFixture(
-          deployOneYearLockFixture
-        );
-
-        // We can increase the time in Hardhat Network
-        await time.increaseTo(unlockTime);
-
-        // We use lock.connect() to send a transaction from another account
-        await expect(lock.connect(otherAccount).withdraw()).to.be.revertedWith(
-          "You aren't the owner"
-        );
-      });
-
-      it("Shouldn't fail if the unlockTime has arrived and the owner calls it", async function () {
-        const { lock, unlockTime } = await loadFixture(
-          deployOneYearLockFixture
-        );
-
-        // Transactions are sent using the first signer by default
-        await time.increaseTo(unlockTime);
-
-        await expect(lock.withdraw()).not.to.be.reverted;
-      });
+  describe("autofarm V2", () => {
+    it("should add new pool", async () => {
+      await farmA.connect(owner).add(200, want.address, false, stratA.address);
+      expect(await farmA.poolLength()).to.equal(1);
     });
-
-    describe("Events", function () {
-      it("Should emit an event on withdrawals", async function () {
-        const { lock, unlockTime, lockedAmount } = await loadFixture(
-          deployOneYearLockFixture
-        );
-
-        await time.increaseTo(unlockTime);
-
-        await expect(lock.withdraw())
-          .to.emit(lock, "Withdrawal")
-          .withArgs(lockedAmount, anyValue); // We accept any value as `when` arg
-      });
-    });
-
-    describe("Transfers", function () {
-      it("Should transfer the funds to the owner", async function () {
-        const { lock, unlockTime, lockedAmount, owner } = await loadFixture(
-          deployOneYearLockFixture
-        );
-
-        await time.increaseTo(unlockTime);
-
-        await expect(lock.withdraw()).to.changeEtherBalances(
-          [owner, lock],
-          [lockedAmount, -lockedAmount]
-        );
-      });
+    it("should deposit want tokens", async () => {
+      await want.connect(owner).approve(farmA.address, 10);
+      await farmA.connect(owner).deposit(0, 10);
     });
   });
 });
+
+// Sumit Guha
+// :knife_fork_plate:  4:30 PM
+// ["0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+// "Timelock address",
+// "Farm address",
+// "Farmtoken address",
+// "0x7efaef62fddcca950418312c6c91aef321375a00",//want
+// "0x55d398326f99059ff775485246999027b3197955",//token0
+// "0xe9e7cea3dedca5984780bafc599bd69add087d56",//token1
+// "0xa184088a740c695e156f91f5cc086a06bb78b827",//earned
+// "0x0895196562c7868c5be92459fae7f877ed450452",//farmcontractaddress
+// "0x10ed43c718714eb63d5aa57b78b54704e256024e",//unirouteraddress
+// "Timelock address",//rewardaddress
+// "0x000000000000000000000000000000000000dead"],//buybackaddress
+// 248,
+// false,
+// false,
+// true,
+// ["0xa184088a740c695e156f91f5cc086a06bb78b827",
+// "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+// "FarmToken address"],
+// ["0xa184088a740c695e156f91f5cc086a06bb78b827",
+// "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+// "0x55d398326f99059fF775485246999027B3197955"],
+// ["0xa184088a740c695e156f91f5cc086a06bb78b827",
+// "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+// "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"],
+// ["0x55d398326f99059fF775485246999027B3197955",
+// "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+// "0xa184088a740c695e156f91f5cc086a06bb78b827"],
+// ["0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",
+// "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+// "0xa184088a740c695e156f91f5cc086a06bb78b827"],
+// 70,
+// 150,
+// 9990,
+10000;

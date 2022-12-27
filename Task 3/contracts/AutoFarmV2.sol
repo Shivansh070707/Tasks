@@ -31,14 +31,16 @@ interface IStrategy {
     function earn() external;
 
     // Transfer want tokens autoFarm -> strategy
-    function deposit(address _userAddress, uint256 _wantAmt)
-        external
-        returns (uint256);
+    function deposit(
+        address _userAddress,
+        uint256 _wantAmt
+    ) external returns (uint256);
 
     // Transfer want tokens strategy -> autoFarm
-    function withdraw(address _userAddress, uint256 _wantAmt)
-        external
-        returns (uint256);
+    function withdraw(
+        address _userAddress,
+        uint256 _wantAmt
+    ) external returns (uint256);
 
     function inCaseTokensGetStuck(
         address _token,
@@ -78,7 +80,8 @@ contract AutoFarmV2 is Ownable, ReentrancyGuard {
     }
 
     address public AUTO = 0x4508ABB72232271e452258530D4Ed799C685eccb; // 1:1 migration to AUTOv2
-    address public AUTOv2 = 0xa184088a740c695E156F91f5cC086a06bb78b827;
+    //address public AUTOv2 = 0xa184088a740c695E156F91f5cC086a06bb78b827;
+    address public AUTOv2;
 
     address public burnAddress = 0x000000000000000000000000000000000000dEaD;
 
@@ -100,6 +103,10 @@ contract AutoFarmV2 is Ownable, ReentrancyGuard {
         uint256 amount
     );
 
+    constructor(address autoV2) public {
+        AUTOv2 = autoV2;
+    }
+
     function poolLength() external view returns (uint256) {
         return poolInfo.length;
     }
@@ -116,8 +123,9 @@ contract AutoFarmV2 is Ownable, ReentrancyGuard {
         if (_withUpdate) {
             massUpdatePools();
         }
-        uint256 lastRewardBlock =
-            block.number > startBlock ? block.number : startBlock;
+        uint256 lastRewardBlock = block.number > startBlock
+            ? block.number
+            : startBlock;
         totalAllocPoint = totalAllocPoint.add(_allocPoint);
         poolInfo.push(
             PoolInfo({
@@ -146,11 +154,10 @@ contract AutoFarmV2 is Ownable, ReentrancyGuard {
     }
 
     // Return reward multiplier over the given _from to _to block.
-    function getMultiplier(uint256 _from, uint256 _to)
-        public
-        view
-        returns (uint256)
-    {
+    function getMultiplier(
+        uint256 _from,
+        uint256 _to
+    ) public view returns (uint256) {
         if (IERC20(AUTOv2).totalSupply() >= AUTOMaxSupply) {
             return 0;
         }
@@ -158,22 +165,23 @@ contract AutoFarmV2 is Ownable, ReentrancyGuard {
     }
 
     // View function to see pending AUTO on frontend.
-    function pendingAUTO(uint256 _pid, address _user)
-        external
-        view
-        returns (uint256)
-    {
+    function pendingAUTO(
+        uint256 _pid,
+        address _user
+    ) external view returns (uint256) {
         PoolInfo storage pool = poolInfo[_pid];
         UserInfo storage user = userInfo[_pid][_user];
         uint256 accAUTOPerShare = pool.accAUTOPerShare;
         uint256 sharesTotal = IStrategy(pool.strat).sharesTotal();
         if (block.number > pool.lastRewardBlock && sharesTotal != 0) {
-            uint256 multiplier =
-                getMultiplier(pool.lastRewardBlock, block.number);
-            uint256 AUTOReward =
-                multiplier.mul(AUTOPerBlock).mul(pool.allocPoint).div(
-                    totalAllocPoint
-                );
+            uint256 multiplier = getMultiplier(
+                pool.lastRewardBlock,
+                block.number
+            );
+            uint256 AUTOReward = multiplier
+                .mul(AUTOPerBlock)
+                .mul(pool.allocPoint)
+                .div(totalAllocPoint);
             accAUTOPerShare = accAUTOPerShare.add(
                 AUTOReward.mul(1e12).div(sharesTotal)
             );
@@ -182,17 +190,16 @@ contract AutoFarmV2 is Ownable, ReentrancyGuard {
     }
 
     // View function to see staked Want tokens on frontend.
-    function stakedWantTokens(uint256 _pid, address _user)
-        external
-        view
-        returns (uint256)
-    {
+    function stakedWantTokens(
+        uint256 _pid,
+        address _user
+    ) external view returns (uint256) {
         PoolInfo storage pool = poolInfo[_pid];
         UserInfo storage user = userInfo[_pid][_user];
 
         uint256 sharesTotal = IStrategy(pool.strat).sharesTotal();
-        uint256 wantLockedTotal =
-            IStrategy(poolInfo[_pid].strat).wantLockedTotal();
+        uint256 wantLockedTotal = IStrategy(poolInfo[_pid].strat)
+            .wantLockedTotal();
         if (sharesTotal == 0) {
             return 0;
         }
@@ -222,10 +229,10 @@ contract AutoFarmV2 is Ownable, ReentrancyGuard {
         if (multiplier <= 0) {
             return;
         }
-        uint256 AUTOReward =
-            multiplier.mul(AUTOPerBlock).mul(pool.allocPoint).div(
-                totalAllocPoint
-            );
+        uint256 AUTOReward = multiplier
+            .mul(AUTOPerBlock)
+            .mul(pool.allocPoint)
+            .div(totalAllocPoint);
 
         AUTOToken(AUTOv2).mint(
             owner(),
@@ -246,10 +253,11 @@ contract AutoFarmV2 is Ownable, ReentrancyGuard {
         UserInfo storage user = userInfo[_pid][msg.sender];
 
         if (user.shares > 0) {
-            uint256 pending =
-                user.shares.mul(pool.accAUTOPerShare).div(1e12).sub(
-                    user.rewardDebt
-                );
+            uint256 pending = user
+                .shares
+                .mul(pool.accAUTOPerShare)
+                .div(1e12)
+                .sub(user.rewardDebt);
             if (pending > 0) {
                 safeAUTOTransfer(msg.sender, pending);
             }
@@ -262,8 +270,10 @@ contract AutoFarmV2 is Ownable, ReentrancyGuard {
             );
 
             pool.want.safeIncreaseAllowance(pool.strat, _wantAmt);
-            uint256 sharesAdded =
-                IStrategy(poolInfo[_pid].strat).deposit(msg.sender, _wantAmt);
+            uint256 sharesAdded = IStrategy(poolInfo[_pid].strat).deposit(
+                msg.sender,
+                _wantAmt
+            );
             user.shares = user.shares.add(sharesAdded);
         }
         user.rewardDebt = user.shares.mul(pool.accAUTOPerShare).div(1e12);
@@ -277,18 +287,17 @@ contract AutoFarmV2 is Ownable, ReentrancyGuard {
         PoolInfo storage pool = poolInfo[_pid];
         UserInfo storage user = userInfo[_pid][msg.sender];
 
-        uint256 wantLockedTotal =
-            IStrategy(poolInfo[_pid].strat).wantLockedTotal();
+        uint256 wantLockedTotal = IStrategy(poolInfo[_pid].strat)
+            .wantLockedTotal();
         uint256 sharesTotal = IStrategy(poolInfo[_pid].strat).sharesTotal();
 
         require(user.shares > 0, "user.shares is 0");
         require(sharesTotal > 0, "sharesTotal is 0");
 
         // Withdraw pending AUTO
-        uint256 pending =
-            user.shares.mul(pool.accAUTOPerShare).div(1e12).sub(
-                user.rewardDebt
-            );
+        uint256 pending = user.shares.mul(pool.accAUTOPerShare).div(1e12).sub(
+            user.rewardDebt
+        );
         if (pending > 0) {
             safeAUTOTransfer(msg.sender, pending);
         }
@@ -299,8 +308,10 @@ contract AutoFarmV2 is Ownable, ReentrancyGuard {
             _wantAmt = amount;
         }
         if (_wantAmt > 0) {
-            uint256 sharesRemoved =
-                IStrategy(poolInfo[_pid].strat).withdraw(msg.sender, _wantAmt);
+            uint256 sharesRemoved = IStrategy(poolInfo[_pid].strat).withdraw(
+                msg.sender,
+                _wantAmt
+            );
 
             if (sharesRemoved > user.shares) {
                 user.shares = 0;
@@ -327,8 +338,8 @@ contract AutoFarmV2 is Ownable, ReentrancyGuard {
         PoolInfo storage pool = poolInfo[_pid];
         UserInfo storage user = userInfo[_pid][msg.sender];
 
-        uint256 wantLockedTotal =
-            IStrategy(poolInfo[_pid].strat).wantLockedTotal();
+        uint256 wantLockedTotal = IStrategy(poolInfo[_pid].strat)
+            .wantLockedTotal();
         uint256 sharesTotal = IStrategy(poolInfo[_pid].strat).sharesTotal();
         uint256 amount = user.shares.mul(wantLockedTotal).div(sharesTotal);
 
@@ -350,10 +361,10 @@ contract AutoFarmV2 is Ownable, ReentrancyGuard {
         }
     }
 
-    function inCaseTokensGetStuck(address _token, uint256 _amount)
-        public
-        onlyOwner
-    {
+    function inCaseTokensGetStuck(
+        address _token,
+        uint256 _amount
+    ) public onlyOwner {
         require(_token != AUTOv2, "!safe");
         IERC20(_token).safeTransfer(msg.sender, _amount);
     }
