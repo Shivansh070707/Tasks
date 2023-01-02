@@ -175,7 +175,7 @@ describe("Test", function () {
         want.address,
         matic.address,
         bitcoin.address,
-        xrp.address,
+        autoV21.address,
         farmB.address,
         "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
         reward.address,
@@ -244,6 +244,7 @@ describe("Test", function () {
     earned address =${earned.address};
     reward address =${reward.address};
     owner want balance =${await want.balanceOf(owner._address)}
+    xrp balance after ${await xrp.balanceOf(owner._address)};
 
     
     `);
@@ -272,12 +273,17 @@ describe("Test", function () {
       // );
     });
     it("should withdraw want tokens", async () => {
+      console.log(
+        `owner balance before ${await want.balanceOf(owner._address)}`
+      );
       const currentBlockTime = await time.latest();
       const one_year = currentBlockTime + 365 * 24 * 60 * 60;
-
       await time.increaseTo(one_year);
+
       await stratA.connect(owner).earn();
-      // await expect(farmA.connect(owner).withdraw(0, 50)).to.changeTokenBalances(
+      // await expect(
+      //   farmA.connect(owner).withdraw(0, ethers.utils.parseUnits("50", "ether"))
+      // ).to.changeTokenBalances(
       //   want,
       //   [owner._address, stratB.address],
       //   [50, -50]
