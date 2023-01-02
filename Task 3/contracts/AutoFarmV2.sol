@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 
 pragma solidity 0.6.12;
-
+import "hardhat/console.sol";
 import "./helpers/ERC20.sol";
 
 import "./libraries/Address.sol";
@@ -216,6 +216,7 @@ contract AutoFarmV2 is Ownable, ReentrancyGuard {
 
     // Update reward variables of the given pool to be up-to-date.
     function updatePool(uint256 _pid) public {
+        console.log(msg.sender);
         PoolInfo storage pool = poolInfo[_pid];
         if (block.number <= pool.lastRewardBlock) {
             return;
