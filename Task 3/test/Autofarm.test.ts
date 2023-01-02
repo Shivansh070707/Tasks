@@ -3,6 +3,7 @@ import { expect } from "chai";
 import { ethers, network } from "hardhat";
 import { AutoFarmV2, StratX2, IERC20 } from "../typechain-types";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import { time } from "@nomicfoundation/hardhat-network-helpers";
 
 describe("Test", function () {
   let matic,
@@ -85,32 +86,77 @@ describe("Test", function () {
 
     await add
       .connect(owner)
-      .addLiquidity(xrp.address, bitcoin.address, 10000, 150000);
+      .addLiquidity(
+        xrp.address,
+        bitcoin.address,
+        ethers.utils.parseUnits("10000", "ether"),
+        ethers.utils.parseUnits("15000", "ether")
+      );
     await add
       .connect(owner)
-      .addLiquidity(xrp.address, matic.address, 10000, 150000);
+      .addLiquidity(
+        xrp.address,
+        matic.address,
+        ethers.utils.parseUnits("10000", "ether"),
+        ethers.utils.parseUnits("15000", "ether")
+      );
     await add
       .connect(owner)
-      .addLiquidity(matic.address, bitcoin.address, 10000, 150000);
+      .addLiquidity(
+        matic.address,
+        bitcoin.address,
+        ethers.utils.parseUnits("10000", "ether"),
+        ethers.utils.parseUnits("15000", "ether")
+      );
 
     await add
       .connect(owner)
-      .addLiquidity(bitcoin.address, autoV2.address, 10000, 150000);
+      .addLiquidity(
+        bitcoin.address,
+        autoV2.address,
+        ethers.utils.parseUnits("10000", "ether"),
+        ethers.utils.parseUnits("15000", "ether")
+      );
     await add
       .connect(owner)
-      .addLiquidity(xrp.address, ada.address, 10000, 150000);
+      .addLiquidity(
+        xrp.address,
+        ada.address,
+        ethers.utils.parseUnits("10000", "ether"),
+        ethers.utils.parseUnits("15000", "ether")
+      );
     await add
       .connect(owner)
-      .addLiquidity(matic.address, bitcoin.address, 10000, 150000);
+      .addLiquidity(
+        matic.address,
+        bitcoin.address,
+        ethers.utils.parseUnits("10000", "ether"),
+        ethers.utils.parseUnits("15000", "ether")
+      );
     await add
       .connect(owner)
-      .addLiquidity(bitcoin.address, autoV21.address, 10000, 150000);
+      .addLiquidity(
+        bitcoin.address,
+        autoV21.address,
+        ethers.utils.parseUnits("10000", "ether"),
+        ethers.utils.parseUnits("15000", "ether")
+      );
     await add
       .connect(owner)
-      .addLiquidity(matic.address, xrp.address, 10000, 150000);
+      .addLiquidity(
+        matic.address,
+        xrp.address,
+        ethers.utils.parseUnits("10000", "ether"),
+        ethers.utils.parseUnits("15000", "ether")
+      );
     await add
       .connect(owner)
-      .addLiquidity(xrp.address, bitcoin.address, 10000, 150000);
+      .addLiquidity(
+        xrp.address,
+        bitcoin.address,
+        ethers.utils.parseUnits("10000", "ether"),
+        ethers.utils.parseUnits("15000", "ether")
+      );
 
     // want is lp pair of matic and bitcoin
     const wantaddress = await add.getPair(matic.address, bitcoin.address);
@@ -197,6 +243,7 @@ describe("Test", function () {
     want address =${want.address};
     earned address =${earned.address};
     reward address =${reward.address};
+    owner want balance =${await want.balanceOf(owner._address)}
 
     
     `);
@@ -209,8 +256,13 @@ describe("Test", function () {
       expect(await farmA.poolLength()).to.equal(1);
     });
     it("should deposit want tokens", async () => {
-      await want.connect(owner).approve(farmA.address, 1000);
-      await farmA.connect(owner).deposit(0, 1000);
+      await want
+        .connect(owner)
+        .approve(farmA.address, ethers.utils.parseUnits("1000", "ether"));
+      await farmA
+        .connect(owner)
+        .deposit(0, ethers.utils.parseUnits("1000", "ether"));
+
       // await expect(
       //   farmA.connect(owner).deposit(0, 1000)
       // ).to.changeTokenBalances(
@@ -220,6 +272,10 @@ describe("Test", function () {
       // );
     });
     it("should withdraw want tokens", async () => {
+      const currentBlockTime = await time.latest();
+      const one_year = currentBlockTime + 365 * 24 * 60 * 60;
+
+      await time.increaseTo(one_year);
       await stratA.connect(owner).earn();
       // await expect(farmA.connect(owner).withdraw(0, 50)).to.changeTokenBalances(
       //   want,

@@ -8,7 +8,7 @@ import "./helpers/Ownable.sol";
 
 contract Matic is ERC20("Matic", "MATIC"), Ownable {
     constructor() public {
-        _mint(msg.sender, 100 ether);
+        _mint(msg.sender, 100000000 ether);
     }
 
     function mint(address _to, uint256 _amount) public onlyOwner {
@@ -18,7 +18,7 @@ contract Matic is ERC20("Matic", "MATIC"), Ownable {
 
 contract Bitcoin is ERC20("Bitcoin", "BTC"), Ownable {
     constructor() public {
-        _mint(msg.sender, 100 ether);
+        _mint(msg.sender, 100000000 ether);
     }
 
     function mint(address _to, uint256 _amount) public onlyOwner {
@@ -28,7 +28,7 @@ contract Bitcoin is ERC20("Bitcoin", "BTC"), Ownable {
 
 contract XRP is ERC20("Ripple", "XRP"), Ownable {
     constructor() public {
-        _mint(msg.sender, 100 ether);
+        _mint(msg.sender, 100000000 ether);
     }
 
     function mint(address _to, uint256 _amount) public onlyOwner {
@@ -38,7 +38,7 @@ contract XRP is ERC20("Ripple", "XRP"), Ownable {
 
 contract Cardano is ERC20("Cardano", "ADA"), Ownable {
     constructor() public {
-        _mint(msg.sender, 100 ether);
+        _mint(msg.sender, 100000000 ether);
     }
 
     function mint(address _to, uint256 _amount) public onlyOwner {
