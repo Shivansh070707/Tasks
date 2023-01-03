@@ -1,4 +1,3 @@
-import { anyValue } from "@nomicfoundation/hardhat-chai-matchers/withArgs";
 import { expect } from "chai";
 import { ethers, network } from "hardhat";
 import { AutoFarmV2, StratX2, IERC20 } from "../typechain-types";
@@ -17,12 +16,12 @@ describe("Test", function () {
     otherAccount,
     stratA: StratX2,
     stratB: StratX2,
-    add,
+    pool,
     want: IERC20,
-    earned,
     autoV21,
     reward;
   before(async function () {
+    // Using Address of ethereum whale
     const address = "0xF977814e90dA44bFA03b6295A0616a897441aceC";
     await network.provider.request({
       method: "hardhat_impersonateAccount",
@@ -33,6 +32,7 @@ describe("Test", function () {
 
     [reward, otherAccount] = await ethers.getSigners();
 
+    //Deploying Tokens
     const MATIC = await ethers.getContractFactory("Matic");
     matic = await MATIC.connect(owner).deploy();
 
@@ -45,126 +45,145 @@ describe("Test", function () {
     const XRP = await ethers.getContractFactory("XRP");
     xrp = await XRP.connect(owner).deploy();
 
+    /* Deploying Auto V2 contract
+    autoV2 is used as a native token for autofarmA
+    autov21 is used as native tokrn for autofarmB
+    */
+
     const AUTOV2 = await ethers.getContractFactory("AUTOv2");
     autoV2 = await AUTOV2.connect(owner).deploy();
-    const AUTOV21 = await ethers.getContractFactory("AUTOv2");
     autoV21 = await AUTOV2.connect(owner).deploy();
 
-    const FARMA = await ethers.getContractFactory("AutoFarmV2");
-    farmA = await FARMA.connect(owner).deploy(autoV2.address);
+    /*
+    deploying autofarm contracts
+    */
+    const AUTOFARM = await ethers.getContractFactory("AutoFarmV2");
+    farmA = await AUTOFARM.connect(owner).deploy(autoV2.address);
+    farmB = await AUTOFARM.connect(owner).deploy(autoV21.address);
 
-    const FARMB = await ethers.getContractFactory("AutoFarmV2");
-    farmB = await FARMB.connect(owner).deploy(autoV21.address);
+    /*
+    Transferring ownership to respective autofarm addresses,
+    After transferring only autofarm contract is able to mint tokens.
+    */
     await autoV2.connect(owner).transferOwnership(farmA.address);
     await autoV21.connect(owner).transferOwnership(farmB.address);
 
-    const ADD = await ethers.getContractFactory("Liquidity");
+    /*
+    Deploying Lp pool for creating lp-pair
+    */
 
-    add = await ADD.connect(owner).deploy();
+    const LP_POOL = await ethers.getContractFactory("Liquidity");
+    pool = await LP_POOL.connect(owner).deploy();
+    /*
+    Approving Pool address various tokens 
+    */
     await matic
       .connect(owner)
-      .approve(add.address, ethers.utils.parseEther("100000000"));
+      .approve(pool.address, ethers.utils.parseEther("100"));
     await bitcoin
       .connect(owner)
-      .approve(add.address, ethers.utils.parseEther("1500000000"));
-    await xrp
-      .connect(owner)
-      .approve(add.address, ethers.utils.parseEther("100000000"));
-    await ada
-      .connect(owner)
-      .approve(add.address, ethers.utils.parseEther("1500000000"));
-
-    // await autoV2
-    //   .connect(owner)
-    //   .mint(owner._address, ethers.utils.parseEther("10"));
-    await autoV2
-      .connect(owner)
-      .approve(add.address, ethers.utils.parseEther("100000000"));
+      .approve(pool.address, ethers.utils.parseEther("150"));
     await autoV21
       .connect(owner)
-      .approve(add.address, ethers.utils.parseEther("100000000"));
+      .approve(pool.address, ethers.utils.parseEther("100"));
+    await ada
+      .connect(owner)
+      .approve(pool.address, ethers.utils.parseEther("150"));
+    await xrp
+      .connect(owner)
+      .approve(pool.address, ethers.utils.parseEther("150"));
 
-    await add
+    await autoV2
+      .connect(owner)
+      .approve(pool.address, ethers.utils.parseEther("100"));
+    await autoV21
+      .connect(owner)
+      .approve(pool.address, ethers.utils.parseEther("100"));
+    /*
+    Creating LP-Pair of Various Tokens
+    */
+    await pool
       .connect(owner)
       .addLiquidity(
-        xrp.address,
+        autoV21.address,
         bitcoin.address,
-        ethers.utils.parseUnits("10000", "ether"),
-        ethers.utils.parseUnits("15000", "ether")
+        ethers.utils.parseUnits("10", "ether"),
+        ethers.utils.parseUnits("15", "ether")
       );
-    await add
+    await pool
       .connect(owner)
       .addLiquidity(
-        xrp.address,
+        autoV21.address,
         matic.address,
-        ethers.utils.parseUnits("10000", "ether"),
-        ethers.utils.parseUnits("15000", "ether")
+        ethers.utils.parseUnits("10", "ether"),
+        ethers.utils.parseUnits("15", "ether")
       );
-    await add
+    await pool
       .connect(owner)
       .addLiquidity(
         matic.address,
         bitcoin.address,
-        ethers.utils.parseUnits("10000", "ether"),
-        ethers.utils.parseUnits("15000", "ether")
+        ethers.utils.parseUnits("10", "ether"),
+        ethers.utils.parseUnits("15", "ether")
       );
 
-    await add
+    await pool
       .connect(owner)
       .addLiquidity(
         bitcoin.address,
         autoV2.address,
-        ethers.utils.parseUnits("10000", "ether"),
-        ethers.utils.parseUnits("15000", "ether")
+        ethers.utils.parseUnits("10", "ether"),
+        ethers.utils.parseUnits("15", "ether")
       );
-    await add
+    await pool
       .connect(owner)
       .addLiquidity(
         xrp.address,
         ada.address,
-        ethers.utils.parseUnits("10000", "ether"),
-        ethers.utils.parseUnits("15000", "ether")
+        ethers.utils.parseUnits("10", "ether"),
+        ethers.utils.parseUnits("15", "ether")
       );
-    await add
+    await pool
       .connect(owner)
       .addLiquidity(
         matic.address,
         bitcoin.address,
-        ethers.utils.parseUnits("10000", "ether"),
-        ethers.utils.parseUnits("15000", "ether")
+        ethers.utils.parseUnits("10", "ether"),
+        ethers.utils.parseUnits("15", "ether")
       );
-    await add
+    await pool
       .connect(owner)
       .addLiquidity(
         bitcoin.address,
         autoV21.address,
-        ethers.utils.parseUnits("10000", "ether"),
-        ethers.utils.parseUnits("15000", "ether")
+        ethers.utils.parseUnits("10", "ether"),
+        ethers.utils.parseUnits("15", "ether")
       );
-    await add
+    await pool
       .connect(owner)
       .addLiquidity(
         matic.address,
         xrp.address,
-        ethers.utils.parseUnits("10000", "ether"),
-        ethers.utils.parseUnits("15000", "ether")
+        ethers.utils.parseUnits("10", "ether"),
+        ethers.utils.parseUnits("15", "ether")
       );
-    await add
+    await pool
       .connect(owner)
       .addLiquidity(
         xrp.address,
         bitcoin.address,
-        ethers.utils.parseUnits("10000", "ether"),
-        ethers.utils.parseUnits("15000", "ether")
+        ethers.utils.parseUnits("10", "ether"),
+        ethers.utils.parseUnits("15", "ether")
       );
 
     // want is lp pair of matic and bitcoin
-    const wantaddress = await add.getPair(matic.address, bitcoin.address);
+    const wantaddress = await pool.getPair(matic.address, bitcoin.address);
     want = await ethers.getContractAt("IERC20", wantaddress);
-
-    const earnaddress = await add.getPair(ada.address, xrp.address);
-    earned = await ethers.getContractAt("IERC20", earnaddress);
-
+    /*
+    Deploying Strat A contract
+    -Pid should of stratA and poolInfo[pid] of farmB should be same
+    -Autocompounding is true ,so the earned address will be the native token of farmB i.e autoV21
+     */
     const StratA = await ethers.getContractFactory("StratX2_PCS");
     stratA = await StratA.connect(owner).deploy(
       [
@@ -185,11 +204,11 @@ describe("Test", function () {
       false,
       false,
       true,
-      [xrp.address, bitcoin.address, autoV2.address],
-      [xrp.address, matic.address],
-      [xrp.address, bitcoin.address],
-      [matic.address, xrp.address],
-      [bitcoin.address, xrp.address],
+      [autoV21.address, bitcoin.address, autoV2.address],
+      [autoV21.address, matic.address],
+      [autoV21.address, bitcoin.address],
+      [matic.address, autoV21.address],
+      [bitcoin.address, autoV21.address],
       70,
       150,
       9990,
@@ -201,7 +220,7 @@ describe("Test", function () {
         "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
         owner._address,
         farmB.address,
-        autoV21.address,
+        xrp.address,
         want.address,
         matic.address,
         bitcoin.address,
@@ -225,7 +244,7 @@ describe("Test", function () {
       9990,
       10000
     );
-    await stratA.deployed();
+
     console.log(`
 
     matic address = ${matic.address};
@@ -239,9 +258,8 @@ describe("Test", function () {
     otherAccount address =${otherAccount.address};
     stratA address =${stratA.address};
     stratB address =${stratB.address};
-    add address =${add.address};
+    pool address =${pool.address};
     want address =${want.address};
-    earned address =${earned.address};
     reward address =${reward.address};
     owner want balance =${await want.balanceOf(owner._address)}
     xrp balance after ${await xrp.balanceOf(owner._address)};
@@ -250,44 +268,73 @@ describe("Test", function () {
     `);
   });
 
-  describe("autofarm V2", () => {
-    it("should add new pool", async () => {
+  describe("Autofarm V2", () => {
+    it("should pool new pool in Both Farms", async () => {
+      // Adding First Pool in Both the farms
       await farmA.connect(owner).add(1, want.address, false, stratA.address);
       await farmB.connect(owner).add(1, want.address, false, stratB.address);
+      expect(await farmB.poolLength()).to.equal(1);
       expect(await farmA.poolLength()).to.equal(1);
+      //console.log(await farmA.poolInfo(0));
     });
-    it("should deposit want tokens", async () => {
+    it("Should deposit want tokens in farmA and want tokens will be stored in FarmB", async () => {
+      //Approving want tokens to farm address
       await want
         .connect(owner)
-        .approve(farmA.address, ethers.utils.parseUnits("1000", "ether"));
+        .approve(farmA.address, ethers.utils.parseUnits("10", "ether"));
+
+      //depositing want tokens
+      await expect(
+        farmA.connect(owner).deposit(0, ethers.utils.parseEther("10"))
+      ).to.changeTokenBalances(
+        want,
+        [owner._address, stratB.address],
+        [ethers.utils.parseEther("-10"), ethers.utils.parseEther("10")]
+      );
+    });
+    it("Should withdraw want tokens and that tokens will be transferred to user", async () => {
+      await expect(
+        farmA.connect(owner).withdraw(0, ethers.utils.parseUnits("1", "ether"))
+      ).to.changeTokenBalances(
+        want,
+        [owner._address, stratB.address],
+        [ethers.utils.parseEther("1"), ethers.utils.parseEther("-1")]
+      );
+    });
+    it("Should Withdraw want token and after withdrawing ,user will get some autoV21 tokens", async () => {
+      let currentBlockTime = await time.latest();
+      let one_day = currentBlockTime + 24 * 60 * 60;
+      await time.increaseTo(one_day);
+      let earn_balance_before = await autoV21.balanceOf(owner._address);
+
       await farmA
         .connect(owner)
-        .deposit(0, ethers.utils.parseUnits("1000", "ether"));
+        .withdraw(0, ethers.utils.parseUnits("1", "ether"));
+      let earn_balance_after = await autoV21.balanceOf(owner._address);
 
-      // await expect(
-      //   farmA.connect(owner).deposit(0, 1000)
-      // ).to.changeTokenBalances(
-      //   want,
-      //   [owner._address, stratB.address],
-      //   [-1000, 1000]
-      // );
+      expect(earn_balance_after - earn_balance_before).to.be.greaterThan(0);
     });
-    it("should withdraw want tokens", async () => {
-      console.log(
-        `owner balance before ${await want.balanceOf(owner._address)}`
-      );
+  });
+  describe("Strat_PCS", () => {
+    it("Run earn and autocompound want tokens", async () => {
+      /*
+    Increasing blocktime to one year
+     */
       const currentBlockTime = await time.latest();
       const one_year = currentBlockTime + 365 * 24 * 60 * 60;
       await time.increaseTo(one_year);
 
+      let want_before = await want.balanceOf(stratB.address);
       await stratA.connect(owner).earn();
-      // await expect(
-      //   farmA.connect(owner).withdraw(0, ethers.utils.parseUnits("50", "ether"))
-      // ).to.changeTokenBalances(
-      //   want,
-      //   [owner._address, stratB.address],
-      //   [50, -50]
-      // );
+      let want_after = await want.balanceOf(stratB.address);
+      expect(want_after - want_before).to.be.greaterThan(0);
+    });
+    it("Should convert dust to earn Tokens", async () => {
+      let earn_before = await autoV21.balanceOf(stratA.address);
+      await stratA.convertDustToEarned();
+      let earn_after = await autoV21.balanceOf(stratA.address);
+
+      expect(earn_after - earn_before).to.be.greaterThan(0);
     });
   });
 });

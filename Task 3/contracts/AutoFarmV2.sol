@@ -216,17 +216,18 @@ contract AutoFarmV2 is Ownable, ReentrancyGuard {
 
     // Update reward variables of the given pool to be up-to-date.
     function updatePool(uint256 _pid) public {
-        console.log(msg.sender);
         PoolInfo storage pool = poolInfo[_pid];
         if (block.number <= pool.lastRewardBlock) {
             return;
         }
         uint256 sharesTotal = IStrategy(pool.strat).sharesTotal();
+        console.log(sharesTotal);
         if (sharesTotal == 0) {
             pool.lastRewardBlock = block.number;
             return;
         }
         uint256 multiplier = getMultiplier(pool.lastRewardBlock, block.number);
+        console.log(multiplier);
         if (multiplier <= 0) {
             return;
         }
@@ -240,11 +241,16 @@ contract AutoFarmV2 is Ownable, ReentrancyGuard {
             AUTOReward.mul(ownerAUTOReward).div(1000)
         );
         AUTOToken(AUTOv2).mint(address(this), AUTOReward);
+        console.log(
+            "address this balance",
+            AUTOToken(AUTOv2).balanceOf(address(this))
+        );
 
         pool.accAUTOPerShare = pool.accAUTOPerShare.add(
             AUTOReward.mul(1e12).div(sharesTotal)
         );
         pool.lastRewardBlock = block.number;
+        console.log("pool.lastRewardBlock", pool.lastRewardBlock);
     }
 
     // Want tokens moved from user -> AUTOFarm (AUTO allocation) -> Strat (compounding)

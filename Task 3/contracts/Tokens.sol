@@ -28,7 +28,7 @@ contract Bitcoin is ERC20("Bitcoin", "BTC"), Ownable {
 
 contract XRP is ERC20("Ripple", "XRP"), Ownable {
     constructor() public {
-        _mint(msg.sender, 100000000 ether);
+        _mint(msg.sender, 100 ether);
     }
 
     function mint(address _to, uint256 _amount) public onlyOwner {
