@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity 0.6.12;
+pragma experimental ABIEncoderV2;
 
 /******************************************************************************\
 * Author: Nick Mudge <nick@perfectabstractions.com> (https://twitter.com/mudgen)
@@ -253,9 +254,10 @@ library LibDiamond {
         }
     }
 
-    function initializeDiamondCut(address _init, bytes memory _calldata)
-        internal
-    {
+    function initializeDiamondCut(
+        address _init,
+        bytes memory _calldata
+    ) internal {
         if (_init == address(0)) {
             require(
                 _calldata.length == 0,
