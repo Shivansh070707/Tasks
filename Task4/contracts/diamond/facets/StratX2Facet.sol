@@ -1,16 +1,17 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.6.12;
+pragma solidity ^0.8.0;
 import "../libraries/SafeERC20.sol";
-import "../libraries/StratX2.sol";
-import "../helpers/Ownable.sol";
-import "../helpers/ReentrancyGuard.sol";
-import "../helpers/Pausable.sol";
+import "../libraries/LibDiamond.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/security/Pausable.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+
 import "../interfaces/IPancakeswapFarm.sol";
 
-contract StratX2 is Ownable, ReentrancyGuard, Pausable {
+contract StratX2Facet is Ownable, ReentrancyGuard, Pausable {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
-    StratX2Storage internal s;
+    LibDiamond.StratX2Storage internal s = LibDiamond.stratX2Storage();
 
     function deposit(
         address _userAddress,
@@ -55,5 +56,9 @@ contract StratX2 is Ownable, ReentrancyGuard, Pausable {
         } else {
             IPancakeswapFarm(s.farmContractAddress).deposit(s.pid, wantAmt);
         }
+    }
+
+    function pid() external view returns (uint) {
+        return s.pid;
     }
 }

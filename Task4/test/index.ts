@@ -11,8 +11,8 @@ describe("Test", () => {
   let diamondCutFacet: Contract | DiamondCutFacet;
   let diamondLoupeFacet: Contract | DiamondLoupeFacet;
   let stratx2: Contract;
-  let stratx2Settings: Contract;
-  let stratx2pcs: Contract;
+  // let stratx2Settings: Contract;
+
   let facetAddresses: string[]; // DiamondCutFacet, DiamondLoupeFacet, TokenAvgPriceV1
   let owner: string;
   let accounts: SignerWithAddress[];
@@ -28,8 +28,11 @@ describe("Test", () => {
       "DiamondLoupeFacet",
       diamondAddress
     );
-    stratx2 = await ethers.getContractAt("StratX2", diamondAddress);
+    console.log("1");
+
+    stratx2 = await ethers.getContractAt("StratX2Facet", diamondAddress);
     accounts = await ethers.getSigners();
+    console.log("2");
     owner = accounts[0].address;
   });
 
@@ -67,6 +70,12 @@ describe("Test", () => {
       assert.sameMembers(result, selectors);
       // console.log("--- selectors ---");
       // console.log(selectors);
+    });
+  });
+  describe("stratX", () => {
+    it("should return pid", async () => {
+      let pid = await stratx2.pid();
+      expect(pid).to.equal(0);
     });
   });
 });

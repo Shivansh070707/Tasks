@@ -29,7 +29,27 @@ export async function deployDiamond() {
 
   // deploy Diamond
   const Diamond = await ethers.getContractFactory("Diamond");
-  const diamond = await Diamond.deploy(owner.address, diamondCutFacet.address);
+  const diamond = await Diamond.deploy(
+    owner.address,
+    diamondCutFacet.address,
+    [
+      "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+      "0x000000000000000000000000000000000000dEaD",
+      "0x000000000000000000000000000000000000dEaD",
+      "0x000000000000000000000000000000000000dEaD",
+      "0x000000000000000000000000000000000000dEaD",
+      "0x000000000000000000000000000000000000dEaD",
+      "0x000000000000000000000000000000000000dEaD",
+      "0x000000000000000000000000000000000000dEaD",
+      "0x000000000000000000000000000000000000dEaD",
+      "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
+      "0x000000000000000000000000000000000000dEaD",
+      "0x000000000000000000000000000000000000dEaD",
+    ],
+    0,
+    false,
+    true
+  );
   await diamond.deployed();
 
   console.log("Diamond deployed at: ", diamond.address);
@@ -46,8 +66,8 @@ export async function deployDiamond() {
   const FacetNames = [
     "DiamondLoupeFacet",
     /* "OwnershipFacet", */
-    "StratX2Settings",
-    "StratX2",
+
+    "StratX2Facet",
   ];
   const cut = [];
   for (const facetName of FacetNames) {
@@ -79,7 +99,7 @@ export async function deployDiamond() {
   if (!receipt.status) throw Error(`Diamond upgrade failed: ${tx.hash}`);
 
   // Set owner address of TokenAvgPrice contract
-  diamond.setMainContractOwner(ethers.utils.getAddress(owner.address));
+  //diamond.setMainContractOwner(ethers.utils.getAddress(owner.address));
 
   console.log("**** Diamond deploy end");
   return diamond.address;
