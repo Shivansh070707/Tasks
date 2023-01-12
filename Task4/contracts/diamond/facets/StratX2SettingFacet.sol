@@ -2,9 +2,8 @@
 pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "../libraries/LibDiamond.sol";
-import "@openzeppelin/contracts/security/Pausable.sol";
 
-contract StratX2Settings is Pausable {
+contract StratX2Settings {
     modifier onlyAllowGov() {
         LibDiamond.StratX2Storage storage s = LibDiamond.stratX2Storage();
         require(msg.sender == s.govAddress, "!gov");
@@ -23,14 +22,6 @@ contract StratX2Settings is Pausable {
     event SetUniRouterAddress(address _uniRouterAddress);
     event SetBuyBackAddress(address _buyBackAddress);
     event SetRewardsAddress(address _rewardsAddress);
-
-    function pause() public virtual onlyAllowGov {
-        _pause();
-    }
-
-    function unpause() public virtual onlyAllowGov {
-        _unpause();
-    }
 
     function setSettings(
         uint256 _entranceFeeFactor,
