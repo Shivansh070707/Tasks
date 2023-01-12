@@ -3,8 +3,8 @@
 //
 // When running the script with `npx hardhat run <script>` you'll find the Hardhat
 // Runtime Environment's members available in the global scope.
-import { ethers } from "hardhat";
-import { getSelectorsFromContract, FacetCutAction } from "./libraries";
+import { ethers } from 'hardhat';
+import { getSelectorsFromContract, FacetCutAction } from './libraries';
 
 export async function deployDiamond() {
   // Hardhat always runs the compile task when running scripts with its command
@@ -15,60 +15,34 @@ export async function deployDiamond() {
   // await hre.run('compile');
   // We get the contract to deploy
 
-  console.log("**** Deploying diamond ...");
+  console.log('**** Deploying diamond ...');
 
   const accounts = await ethers.getSigners();
   const owner = accounts[0];
 
   // deploy DiamondCutFacet
-  const DiamondCutFacet = await ethers.getContractFactory("DiamondCutFacet");
+  const DiamondCutFacet = await ethers.getContractFactory('DiamondCutFacet');
   const diamondCutFacet = await DiamondCutFacet.deploy();
   await diamondCutFacet.deployed();
 
-  console.log("DiamondCutFacet deployed at: ", diamondCutFacet.address);
+  console.log('DiamondCutFacet deployed at: ', diamondCutFacet.address);
 
   // deploy Diamond
-  const Diamond = await ethers.getContractFactory("Diamond");
-  const diamond = await Diamond.deploy(
-    owner.address,
-    diamondCutFacet.address,
-    [
-      "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
-      "0x000000000000000000000000000000000000dEaD",
-      "0x000000000000000000000000000000000000dEaD",
-      "0x000000000000000000000000000000000000dEaD",
-      "0x000000000000000000000000000000000000dEaD",
-      "0x000000000000000000000000000000000000dEaD",
-      "0x000000000000000000000000000000000000dEaD",
-      "0x000000000000000000000000000000000000dEaD",
-      "0x000000000000000000000000000000000000dEaD",
-      "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
-      "0x000000000000000000000000000000000000dEaD",
-      "0x000000000000000000000000000000000000dEaD",
-    ],
-    0,
-    false,
-    true
-  );
+  const Diamond = await ethers.getContractFactory('Diamond');
+  const diamond = await Diamond.deploy(owner.address, diamondCutFacet.address);
   await diamond.deployed();
 
-  console.log("Diamond deployed at: ", diamond.address);
+  console.log('Diamond deployed at: ', diamond.address);
 
   // deploy DiamondInit
-  const DiamondInit = await ethers.getContractFactory("DiamondInit");
+  const DiamondInit = await ethers.getContractFactory('DiamondInit');
   const diamondInit = await DiamondInit.deploy();
   await diamondInit.deployed();
 
-  console.log("DiamondInit deployed at: ", diamondInit.address);
-
+  console.log('DiamondInit deployed at: ', diamondInit.address);
   // deploy facets
   // console.log("Deploying facets");
-  const FacetNames = [
-    "DiamondLoupeFacet",
-    /* "OwnershipFacet", */
-
-    "StratX2Facet",
-  ];
+  const FacetNames = ['DiamondLoupeFacet', 'OwnershipFacet', 'StratX2Facet'];
   const cut = [];
   for (const facetName of FacetNames) {
     const Facet = await ethers.getContractFactory(facetName);
@@ -86,8 +60,33 @@ export async function deployDiamond() {
   }
 
   // console.log("Diamond Cut: ", cut);
-  const diamondCut = await ethers.getContractAt("IDiamondCut", diamond.address);
-  const functionCall = diamondInit.interface.encodeFunctionData("init");
+  const diamondCut = await ethers.getContractAt('IDiamondCut', diamond.address);
+  const functionCall = diamondInit.interface.encodeFunctionData('init', [
+    [
+      '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c',
+      '0x000000000000000000000000000000000000dEaD',
+      '0x000000000000000000000000000000000000dEaD',
+      '0x000000000000000000000000000000000000dEaD',
+      '0x000000000000000000000000000000000000dEaD',
+      '0x000000000000000000000000000000000000dEaD',
+      '0x000000000000000000000000000000000000dEaD',
+      '0x000000000000000000000000000000000000dEaD',
+      '0x000000000000000000000000000000000000dEaD',
+      '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D',
+      '0x000000000000000000000000000000000000dEaD',
+      '0x000000000000000000000000000000000000dEaD',
+    ],
+    500,
+    false,
+    false,
+    true,
+    [],
+    [],
+    [],
+    [],
+    [],
+    [70, 150, 9990, 10000],
+  ]);
   const tx = await diamondCut.diamondCut(
     cut,
     diamondInit.address,
@@ -101,7 +100,7 @@ export async function deployDiamond() {
   // Set owner address of TokenAvgPrice contract
   //diamond.setMainContractOwner(ethers.utils.getAddress(owner.address));
 
-  console.log("**** Diamond deploy end");
+  console.log('**** Diamond deploy end');
   return diamond.address;
 }
 
@@ -109,7 +108,7 @@ export async function deployDiamond() {
 // and properly handle errors.
 if (require.main === module) {
   deployDiamond()
-    .then(() => console.log("deployment success"))
+    .then(() => console.log('deployment success'))
     .catch((error) => {
       console.error(error);
     });

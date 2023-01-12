@@ -39,7 +39,9 @@ describe("Test", () => {
   describe("test - diamond", () => {
     it("should have 3 facets -- call to facetAddresses", async () => {
       facetAddresses = await diamondLoupeFacet.facetAddresses();
-      assert(facetAddresses.length === 3);
+      console.log(facetAddresses);
+
+      assert(facetAddresses.length === 4);
     });
 
     it("should have the right function selectors -- call to faceFunctionSelectors", async () => {
@@ -60,12 +62,12 @@ describe("Test", () => {
       );
       assert.sameMembers(result, selectors);
       // console.log("--- selectors ---");
-      // console.log(selectors);
+      // console.log(selectors)
 
-      // test for TokenAvgPriceV1
+      // test for stratX2
       selectors = getSelectorsFromContract(stratx2).getSelectors();
       result = await diamondLoupeFacet.facetFunctionSelectors(
-        facetAddresses[2]
+        facetAddresses[3]
       );
       assert.sameMembers(result, selectors);
       // console.log("--- selectors ---");
@@ -75,7 +77,9 @@ describe("Test", () => {
   describe("stratX", () => {
     it("should return pid", async () => {
       let pid = await stratx2.pid();
-      expect(pid).to.equal(0);
+      console.log("pid", pid);
+
+      expect(pid).to.equal(500);
     });
   });
 });

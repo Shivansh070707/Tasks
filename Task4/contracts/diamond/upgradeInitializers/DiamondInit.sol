@@ -21,13 +21,59 @@ import {IERC165} from "../interfaces/IERC165.sol";
 contract DiamondInit {
     // You can add parameters to this function in order to pass in
     // data to set your own state variables
-    function init() external {
-        // adding ERC165 data
+
+    function init(
+        address[] memory _addresses,
+        uint256 _pid,
+        bool _isCAKEStaking,
+        bool _isSameAssetDeposit,
+        bool _isAutoComp,
+        address[] memory _earnedToAUTOPath,
+        address[] memory _earnedToToken0Path,
+        address[] memory _earnedToToken1Path,
+        address[] memory _token0ToEarnedPath,
+        address[] memory _token1ToEarnedPath,
+        uint256[] memory _num
+    ) external {
+        LibDiamond.StratX2Storage storage s = LibDiamond.stratX2Storage();
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         ds.supportedInterfaces[type(IERC165).interfaceId] = true;
         ds.supportedInterfaces[type(IDiamondCut).interfaceId] = true;
         ds.supportedInterfaces[type(IDiamondLoupe).interfaceId] = true;
         ds.supportedInterfaces[type(IERC173).interfaceId] = true;
+
+        s.wbnbAddress = _addresses[0];
+        s.govAddress = _addresses[1];
+        s.autoFarmAddress = _addresses[2];
+        s.AUTOAddress = _addresses[3];
+
+        s.wantAddress = _addresses[4];
+        s.token0Address = _addresses[5];
+        s.token1Address = _addresses[6];
+        s.earnedAddress = _addresses[7];
+
+        s.farmContractAddress = _addresses[8];
+        s.pid = _pid;
+        s.isCAKEStaking = _isCAKEStaking;
+        s.isSameAssetDeposit = _isSameAssetDeposit;
+
+        s.isAutoComp = _isAutoComp;
+
+        s.uniRouterAddress = _addresses[9];
+        s.earnedToAUTOPath = _earnedToAUTOPath;
+
+        s.earnedToToken0Path = _earnedToToken0Path;
+        s.earnedToToken1Path = _earnedToToken1Path;
+        s.token0ToEarnedPath = _token0ToEarnedPath;
+        s.token1ToEarnedPath = _token1ToEarnedPath;
+
+        s.controllerFee = _num[0];
+        s.rewardsAddress = _addresses[10];
+        s.buyBackRate = _num[1];
+
+        s.buyBackAddress = _addresses[11];
+        s.entranceFeeFactor = _num[2];
+        s.withdrawFeeFactor = _num[3];
 
         // add your own state variables
         // EIP-2535 specifies that the `diamondCut` function takes two optional
