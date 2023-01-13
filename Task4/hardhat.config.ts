@@ -1,8 +1,8 @@
-import { HardhatUserConfig } from "hardhat/config";
-import "@nomicfoundation/hardhat-toolbox";
+import { HardhatUserConfig } from 'hardhat/config';
+import '@nomicfoundation/hardhat-toolbox';
 
-import "hardhat-contract-sizer";
-import * as dotenv from "dotenv";
+import 'hardhat-contract-sizer';
+import * as dotenv from 'dotenv';
 dotenv.config();
 const { ALCHEMY_API_KEY, GOERLI_API_KEY } = process.env;
 
@@ -11,16 +11,7 @@ const config: HardhatUserConfig = {
   solidity: {
     compilers: [
       {
-        version: "0.8.14",
-        settings: {
-          optimizer: {
-            enabled: true,
-            runs: 1000,
-          },
-        },
-      },
-      {
-        version: "0.6.12",
+        version: '0.8.14',
         settings: {
           optimizer: {
             enabled: true,
@@ -30,6 +21,9 @@ const config: HardhatUserConfig = {
       },
     ],
   },
+  mocha: {
+    timeout: 100000000,
+  },
   networks: {
     hardhat: {
       forking: {
@@ -37,8 +31,8 @@ const config: HardhatUserConfig = {
         blockNumber: 16139820,
       },
     },
-    "truffle-dashboard": {
-      url: "http://localhost:24012/rpc",
+    'truffle-dashboard': {
+      url: 'http://localhost:24012/rpc',
     },
   },
   etherscan: {

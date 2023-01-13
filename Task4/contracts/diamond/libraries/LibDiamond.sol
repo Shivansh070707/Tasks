@@ -303,10 +303,9 @@ library LibDiamond {
         }
     }
 
-    function initializeDiamondCut(
-        address _init,
-        bytes memory _calldata
-    ) internal {
+    function initializeDiamondCut(address _init, bytes memory _calldata)
+        internal
+    {
         if (_init == address(0)) {
             require(
                 _calldata.length == 0,

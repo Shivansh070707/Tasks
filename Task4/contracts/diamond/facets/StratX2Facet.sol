@@ -6,6 +6,7 @@ import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "../interfaces/IPancakeswapFarm.sol";
 import "../interfaces/IPancakeRouter02.sol";
+import "hardhat/console.sol";
 
 interface IWBNB is IERC20 {
     function deposit() external payable;
@@ -36,6 +37,7 @@ contract StratX2Facet is ReentrancyGuard, Pausable {
         whenNotPaused
         returns (uint256)
     {
+        console.log("IM diamond");
         LibDiamond.StratX2Storage storage s = LibDiamond.stratX2Storage();
         IERC20(s.wantAddress).safeTransferFrom(
             address(msg.sender),
@@ -169,7 +171,7 @@ contract StratX2Facet is ReentrancyGuard, Pausable {
             // Swap half earned to token0
             _safeSwap(
                 s.uniRouterAddress,
-                earnedAmt * (2),
+                earnedAmt / (2),
                 s.slippageFactor,
                 s.earnedToToken0Path,
                 address(this),
