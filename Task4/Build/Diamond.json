@@ -1,0 +1,24 @@
+{
+	"address": "0xFC4EE541377F3b6641c23CBE82F6f04388290421",
+	"network": {
+		"name": "unknown",
+		"chainId": 31337
+	},
+	"abi": [
+		{
+			"type": "constructor",
+			"stateMutability": "payable",
+			"payable": true,
+			"inputs": [
+				{
+					"type": "address",
+					"name": "_contractOwner"
+				},
+				{
+					"type": "address",
+					"name": "_diamondCutFacet"
+				}
+			]
+		}
+	]
+}

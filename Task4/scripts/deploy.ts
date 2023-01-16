@@ -8,6 +8,16 @@ import { getSelectorsFromContract, FacetCutAction } from './libraries';
 import { main } from '../scripts/helpers/token';
 import { Contract } from 'ethers';
 import { AutoFarmV2, StratX2, IERC20 } from '../typechain-types';
+import * as fs from 'fs';
+// if (!fs.existsSync('Build')) {
+//   fs.mkdir('Build', (err) => {
+//     console.log('File created');
+//   });
+
+fs.mkdir('Build', (err) => {
+  console.log('File created');
+});
+// }
 
 export async function deployDiamond() {
   let x = await main();
@@ -46,12 +56,38 @@ export async function deployDiamond() {
   const diamondCutFacet = await DiamondCutFacet.deploy();
   await diamondCutFacet.deployed();
 
+  let diamondCutFacetData = {
+    address: diamondCutFacet.address,
+    network: {
+      name: diamondCutFacet.provider._network.name,
+      chainId: diamondCutFacet.provider.network.chainId,
+    },
+    abi: JSON.parse(diamondCutFacet.interface.format('json')),
+  };
+  fs.writeFileSync(
+    'Build/DiamondCutFacet.json',
+    JSON.stringify(diamondCutFacetData, null, '\t')
+  );
+
   console.log('DiamondCutFacet deployed at: ', diamondCutFacet.address);
 
   // deploy Diamond
   const Diamond = await ethers.getContractFactory('Diamond');
   const diamond = await Diamond.deploy(owner.address, diamondCutFacet.address);
   await diamond.deployed();
+
+  let diamondFacetData = {
+    address: diamond.address,
+    network: {
+      name: diamond.provider._network.name,
+      chainId: diamond.provider.network.chainId,
+    },
+    abi: JSON.parse(diamond.interface.format('json')),
+  };
+  fs.writeFileSync(
+    'Build/Diamond.json',
+    JSON.stringify(diamondFacetData, null, '\t')
+  );
 
   console.log('Diamond deployed at: ', diamond.address);
 
@@ -60,21 +96,43 @@ export async function deployDiamond() {
   const diamondInit = await DiamondInit.deploy();
   await diamondInit.deployed();
 
+  let diamondInitFacetData = {
+    address: diamondInit.address,
+    network: {
+      name: diamondInit.provider._network.name,
+      chainId: diamondInit.provider.network.chainId,
+    },
+    abi: JSON.parse(diamondInit.interface.format('json')),
+  };
+  fs.writeFileSync(
+    'Build/DiamondInit.json',
+    JSON.stringify(diamondInitFacetData, null, '\t')
+  );
+
   console.log('DiamondInit deployed at: ', diamondInit.address);
   // deploy facets
   // console.log("Deploying facets");
   const FacetNames = [
     'DiamondLoupeFacet',
     'OwnershipFacet',
-    'StratX2Setter',
+    'StratX2SetterFacet',
     'StratX2Facet',
-    'StratX2Getter',
+    'StratX2GetterFacet',
   ];
   const cut = [];
+  let data = [];
   for (const facetName of FacetNames) {
     const Facet = await ethers.getContractFactory(facetName);
     const facet = await Facet.deploy();
     await facet.deployed();
+    data.push({
+      address: facet.address,
+      network: {
+        name: facet.provider._network.name,
+        chainId: facet.provider.network.chainId,
+      },
+      abi: JSON.parse(facet.interface.format('json')),
+    });
 
     console.log(`${facetName} deployed at ${facet.address}`);
 
@@ -127,6 +185,37 @@ export async function deployDiamond() {
   let diamondAddress: string = diamond.address;
   await farmA.connect(owner).add(1, want.address, false, stratA.address);
   await farmB.connect(owner).add(1, want.address, false, stratB.address);
+
+  let DiamondLoupeFacetData = {
+    data: data[0],
+  };
+  fs.writeFileSync(
+    'Build/DiamondLoupeFacet.json',
+    JSON.stringify(DiamondLoupeFacetData, null, '\t')
+  );
+
+  let StratX2SetterData = {
+    data: data[2],
+  };
+  fs.writeFileSync(
+    'Build/StratX2Setter.json',
+    JSON.stringify(StratX2SetterData, null, '\t')
+  );
+  let StratX2FacetData = {
+    data: data[3],
+  };
+  fs.writeFileSync(
+    'Build/StratX2Facet.json',
+    JSON.stringify(StratX2FacetData, null, '\t')
+  );
+
+  let StratX2GetterData = {
+    data: data[4],
+  };
+  fs.writeFileSync(
+    'Build/StratX2GetterFacet.json',
+    JSON.stringify(StratX2GetterData, null, '\t')
+  );
 
   console.log('**** Diamond deploy end');
   return {
