@@ -4,33 +4,38 @@
 pragma solidity ^0.8.0;
 import "hardhat/console.sol";
 
+interface IStratX {
+    function checkreentrancy() external;
+}
+
 contract ReentrancyChecker {
     address victim;
     uint256 num;
+    event Response(bool success, bytes data);
 
     constructor(address _victim) {
         victim = _victim;
     }
 
     function attack() public {
-        uint256 x = 0;
-        while (x < 4) {
-            (bool success, ) = victim.call(
-                abi.encodeWithSignature("checkreentrancy()")
-            );
-            require(success, "failed fun");
-            x++;
-
-            console.log(x);
-        }
+        IStratX(victim).checkreentrancy();
+        // (bool success, bytes memory data) = victim.call(
+        //     abi.encodeWithSignature("checkreentrancy()")
+        // );
+        // emit Response(success, data);
+        // require(success, "failed fun");
     }
 
     fallback() external payable {
         num++;
-        console.log("num", num);
-        (bool success, ) = victim.call(
-            abi.encodeWithSignature("checkreentrancy()")
-        );
-        require(success, "failed fallback");
+        if (num < 4) {
+            console.log("num", num);
+            IStratX(victim).checkreentrancy();
+            // (bool success, ) = victim.call(
+            //     abi.encodeWithSignature("checkreentrancy()")
+            // );
+            // console.log("HIIIII");
+            // require(success, "failed fallback");
+        }
     }
 }

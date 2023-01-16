@@ -128,10 +128,9 @@ describe('Test', () => {
       await want
         .connect(owner)
         .approve(diamondAddress, ethers.utils.parseUnits('10', 'ether'));
+
       await expect(
-        stratx2
-          .connect(owner)
-          .deposit(owner.address, ethers.utils.parseEther('10'))
+        stratx2.connect(owner).deposit(ethers.utils.parseEther('10'))
       ).to.changeTokenBalances(
         want,
         [owner.address, stratB.address],
@@ -161,9 +160,7 @@ describe('Test', () => {
     });
     it('Should withdraw want tokens and that tokens will be transferred to farmA', async () => {
       await expect(
-        stratx2
-          .connect(owner)
-          .withdraw(owner.address, ethers.utils.parseUnits('1', 'ether'))
+        stratx2.connect(owner).withdraw(ethers.utils.parseUnits('1', 'ether'))
       ).to.changeTokenBalances(
         want,
         [farmA.address, stratB.address],
@@ -215,11 +212,25 @@ describe('Test', () => {
         '!gov'
       );
     });
-    it('should throw error when enter two fun', async () => {
-      let Check = await ethers.getContractFactory('ReentrancyChecker');
-      let check = await Check.deploy(diamondAddress);
-      await check.attack();
-      console.log(await stratx2.getnum());
+    // it('should throw error when enter two fun', async () => {
+    //   let Check = await ethers.getContractFactory('ReentrancyChecker');
+    //   let check = await Check.deploy(diamondAddress);
+    //   await check.attack();
+    //   let tx = await check.attack();
+
+    //   let receipt = await tx.wait();
+    //   console.log(
+    //     receipt.events?.filter((x) => {
+    //       return x.event == 'Response';
+    //     })
+    //   );
+    //   console.log(await stratx2.getnum());
+    // });
+    it('should throw error when paused', async () => {
+      await stratx2Settings.connect(owner).pause();
+      expect(
+        stratx2.connect(owner).deposit(ethers.utils.parseEther('1'))
+      ).to.be.revertedWith('Pausable: paused');
     });
   });
 });

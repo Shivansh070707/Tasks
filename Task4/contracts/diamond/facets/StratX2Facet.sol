@@ -292,8 +292,8 @@ contract StratX2Facet is IModifier {
     ) public {
         LibDiamond.StratX2Storage storage s = LibDiamond.stratX2Storage();
         require(msg.sender == s.govAddress, "!gov");
-        require(_token != s.earnedAddress, "!safe");
-        require(_token != s.wantAddress, "!safe");
+        require(_token != s.earnedAddress, "!safe,token is Earned address");
+        require(_token != s.wantAddress, "!safe,token is want address");
         IERC20(_token).safeTransfer(_to, _amount);
     }
 
@@ -337,7 +337,8 @@ contract StratX2Facet is IModifier {
     function checkreentrancy() external nonreentrant {
         LibDiamond.StratX2Storage storage s = LibDiamond.stratX2Storage();
         s.num++;
-        msg.sender.call(abi.encodeWithSignature("checkreentrancy()"));
+        (bool success, ) = address(msg.sender).call(" ");
+        require(success, "internal check failed");
     }
 
     function getnum() external view returns (uint256) {

@@ -26,14 +26,10 @@ interface IStrategy {
     function earn() external;
 
     // Transfer want tokens autoFarm -> strategy
-    function deposit(address _userAddress, uint256 _wantAmt)
-        external
-        returns (uint256);
+    function deposit(uint256 _wantAmt) external returns (uint256);
 
     // Transfer want tokens strategy -> autoFarm
-    function withdraw(address _userAddress, uint256 _wantAmt)
-        external
-        returns (uint256);
+    function withdraw(uint256 _wantAmt) external returns (uint256);
 
     function inCaseTokensGetStuck(
         address _token,
@@ -265,7 +261,6 @@ contract AutoFarmV2 is Ownable, ReentrancyGuard {
 
             pool.want.safeIncreaseAllowance(pool.strat, _wantAmt);
             uint256 sharesAdded = IStrategy(poolInfo[_pid].strat).deposit(
-                msg.sender,
                 _wantAmt
             );
             user.shares = user.shares + (sharesAdded);
@@ -303,7 +298,6 @@ contract AutoFarmV2 is Ownable, ReentrancyGuard {
         }
         if (_wantAmt > 0) {
             uint256 sharesRemoved = IStrategy(poolInfo[_pid].strat).withdraw(
-                msg.sender,
                 _wantAmt
             );
 
@@ -337,7 +331,7 @@ contract AutoFarmV2 is Ownable, ReentrancyGuard {
         uint256 sharesTotal = IStrategy(poolInfo[_pid].strat).sharesTotal();
         uint256 amount = (user.shares * (wantLockedTotal)) / (sharesTotal);
 
-        IStrategy(poolInfo[_pid].strat).withdraw(msg.sender, amount);
+        IStrategy(poolInfo[_pid].strat).withdraw(amount);
 
         pool.want.safeTransfer(address(msg.sender), amount);
         emit EmergencyWithdraw(msg.sender, _pid, amount);
