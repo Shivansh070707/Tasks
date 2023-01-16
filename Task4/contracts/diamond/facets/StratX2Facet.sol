@@ -333,4 +333,15 @@ contract StratX2Facet is IModifier {
                 _deadline
             );
     }
+
+    function checkreentrancy() external nonreentrant {
+        LibDiamond.StratX2Storage storage s = LibDiamond.stratX2Storage();
+        s.num++;
+        msg.sender.call(abi.encodeWithSignature("checkreentrancy()"));
+    }
+
+    function getnum() external view returns (uint256) {
+        LibDiamond.StratX2Storage storage s = LibDiamond.stratX2Storage();
+        return s.num;
+    }
 }

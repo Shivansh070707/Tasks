@@ -209,4 +209,17 @@ describe('Test', () => {
       expect(await stratx2getter.slippageFactor()).to.equal(500);
     });
   });
+  describe('Errors', () => {
+    it('Should throw error when caller is not gov ', async () => {
+      await expect(stratx2Settings.setGov(owner.address)).to.be.revertedWith(
+        '!gov'
+      );
+    });
+    it('should throw error when enter two fun', async () => {
+      let Check = await ethers.getContractFactory('ReentrancyChecker');
+      let check = await Check.deploy(diamondAddress);
+      await check.attack();
+      console.log(await stratx2.getnum());
+    });
+  });
 });

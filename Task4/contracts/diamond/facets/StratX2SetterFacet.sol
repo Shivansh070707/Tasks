@@ -70,7 +70,6 @@ contract StratX2Setter {
 
     function setGov(address _govAddress) public {
         LibDiamond.StratX2Storage storage s = LibDiamond.stratX2Storage();
-
         require(msg.sender == s.govAddress, "!gov");
         s.govAddress = _govAddress;
         emit SetGov(_govAddress);

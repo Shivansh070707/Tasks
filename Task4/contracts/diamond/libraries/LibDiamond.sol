@@ -48,6 +48,7 @@ library LibDiamond {
         address AUTOAddress;
         address govAddress; // timelock contract
         bool onlyGov;
+        uint256 num;
         uint256 lastEarnBlock;
         uint256 wantLockedTotal;
         uint256 sharesTotal;
