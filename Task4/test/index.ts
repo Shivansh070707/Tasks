@@ -52,7 +52,7 @@ describe('Test', () => {
 
     stratx2 = await ethers.getContractAt('StratX2Facet', diamondAddress);
     stratx2Settings = await ethers.getContractAt(
-      'StratX2Settings',
+      'StratX2Setter',
       diamondAddress
     );
     stratx2getter = await ethers.getContractAt('StratX2Getter', diamondAddress);
@@ -123,7 +123,7 @@ describe('Test', () => {
       expect(slippageFactor).to.equal(950);
     });
     it('should deposit want tokens in diamond StratX', async () => {
-      console.log(await want.balanceOf(owner._address));
+      console.log(await want.balanceOf(owner.address));
 
       await want
         .connect(owner)
@@ -131,22 +131,22 @@ describe('Test', () => {
       await expect(
         stratx2
           .connect(owner)
-          .deposit(owner._address, ethers.utils.parseEther('10'))
+          .deposit(owner.address, ethers.utils.parseEther('10'))
       ).to.changeTokenBalances(
         want,
-        [owner._address, stratB.address],
+        [owner.address, stratB.address],
         [ethers.utils.parseEther('-10'), ethers.utils.parseEther('10')]
       );
     });
     it('should deposit want tokens in farmA -> Diamond Strat -> FarmB ->StratB', async () => {
       await want
         .connect(owner)
-        .approve(farmA.address, ethers.utils.parseUnits('10', 'ether'));
+        .approve(farmA.address, ethers.utils.parseEther('10'));
       await expect(
         farmA.connect(owner).deposit(0, ethers.utils.parseEther('10'))
       ).to.changeTokenBalances(
         want,
-        [owner._address, stratB.address],
+        [owner.address, stratB.address],
         [ethers.utils.parseEther('-10'), ethers.utils.parseEther('10')]
       );
     });
@@ -155,7 +155,7 @@ describe('Test', () => {
         farmA.connect(owner).withdraw(0, ethers.utils.parseUnits('1', 'ether'))
       ).to.changeTokenBalances(
         want,
-        [owner._address, stratB.address],
+        [owner.address, stratB.address],
         [ethers.utils.parseEther('1'), ethers.utils.parseEther('-1')]
       );
     });
@@ -163,7 +163,7 @@ describe('Test', () => {
       await expect(
         stratx2
           .connect(owner)
-          .withdraw(owner._address, ethers.utils.parseUnits('1', 'ether'))
+          .withdraw(owner.address, ethers.utils.parseUnits('1', 'ether'))
       ).to.changeTokenBalances(
         want,
         [farmA.address, stratB.address],
@@ -174,12 +174,12 @@ describe('Test', () => {
       let currentBlockTime = await time.latest();
       let one_day = currentBlockTime + 24 * 60 * 60;
       await time.increaseTo(one_day);
-      let earn_balance_before = await autoV21.balanceOf(owner._address);
+      let earn_balance_before = await autoV21.balanceOf(owner.address);
 
       await farmA
         .connect(owner)
         .withdraw(0, ethers.utils.parseUnits('1', 'ether'));
-      let earn_balance_after = await autoV21.balanceOf(owner._address);
+      let earn_balance_after = await autoV21.balanceOf(owner.address);
 
       expect(earn_balance_after - earn_balance_before).to.be.greaterThan(0);
     });

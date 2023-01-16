@@ -1,14 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "../libraries/LibDiamond.sol";
+import {LibDiamond} from "../libraries/LibDiamond.sol";
 
-contract StratX2Settings {
-    modifier onlyAllowGov() {
-        LibDiamond.StratX2Storage storage s = LibDiamond.stratX2Storage();
-        require(msg.sender == s.govAddress, "!gov");
-        _;
-    }
+contract StratX2Setter {
     event SetSettings(
         uint256 _entranceFeeFactor,
         uint256 _withdrawFeeFactor,
@@ -29,8 +24,9 @@ contract StratX2Settings {
         uint256 _controllerFee,
         uint256 _buyBackRate,
         uint256 _slippageFactor
-    ) public virtual onlyAllowGov {
+    ) public {
         LibDiamond.StratX2Storage storage s = LibDiamond.stratX2Storage();
+        require(msg.sender == s.govAddress, "!gov");
         require(
             _entranceFeeFactor >= s.entranceFeeFactorLL,
             "_entranceFeeFactor too low"
@@ -72,45 +68,51 @@ contract StratX2Settings {
         );
     }
 
-    function setGov(address _govAddress) public virtual onlyAllowGov {
+    function setGov(address _govAddress) public {
         LibDiamond.StratX2Storage storage s = LibDiamond.stratX2Storage();
+
+        require(msg.sender == s.govAddress, "!gov");
         s.govAddress = _govAddress;
         emit SetGov(_govAddress);
     }
 
-    function setOnlyGov(bool _onlyGov) public virtual onlyAllowGov {
+    function setOnlyGov(bool _onlyGov) public {
         LibDiamond.StratX2Storage storage s = LibDiamond.stratX2Storage();
+        require(msg.sender == s.govAddress, "!gov");
         s.onlyGov = _onlyGov;
         emit SetOnlyGov(_onlyGov);
     }
 
-    function setUniRouterAddress(address _uniRouterAddress)
-        public
-        virtual
-        onlyAllowGov
-    {
+    function setUniRouterAddress(address _uniRouterAddress) public {
         LibDiamond.StratX2Storage storage s = LibDiamond.stratX2Storage();
+        require(msg.sender == s.govAddress, "!gov");
         s.uniRouterAddress = _uniRouterAddress;
         emit SetUniRouterAddress(_uniRouterAddress);
     }
 
-    function setBuyBackAddress(address _buyBackAddress)
-        public
-        virtual
-        onlyAllowGov
-    {
+    function setBuyBackAddress(address _buyBackAddress) public {
         LibDiamond.StratX2Storage storage s = LibDiamond.stratX2Storage();
+        require(msg.sender == s.govAddress, "!gov");
         s.buyBackAddress = _buyBackAddress;
         emit SetBuyBackAddress(_buyBackAddress);
     }
 
-    function setRewardsAddress(address _rewardsAddress)
-        public
-        virtual
-        onlyAllowGov
-    {
+    function setRewardsAddress(address _rewardsAddress) public {
         LibDiamond.StratX2Storage storage s = LibDiamond.stratX2Storage();
+        require(msg.sender == s.govAddress, "!gov");
         s.rewardsAddress = _rewardsAddress;
         emit SetRewardsAddress(_rewardsAddress);
+    }
+
+    function pause() public {
+        LibDiamond.StratX2Storage storage s = LibDiamond.stratX2Storage();
+        require(msg.sender == s.govAddress, "!gov");
+        LibDiamond._pause();
+    }
+
+    function unpause() public {
+        LibDiamond.StratX2Storage storage s = LibDiamond.stratX2Storage();
+        require(msg.sender == s.govAddress, "!gov");
+        LibDiamond._unpause();
     }
 }

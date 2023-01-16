@@ -34,12 +34,12 @@ export async function deployDiamond() {
   console.log('**** Deploying diamond ...');
 
   const address = '0xF977814e90dA44bFA03b6295A0616a897441aceC';
-  await network.provider.request({
-    method: 'hardhat_impersonateAccount',
-    params: [address],
-  });
+  // await network.provider.request({
+  //   method: 'hardhat_impersonateAccount',
+  //   params: [address],
+  // });
 
-  owner = ethers.provider.getSigner(address);
+  // owner = await ethers.getSigner(address);
 
   // deploy DiamondCutFacet
   const DiamondCutFacet = await ethers.getContractFactory('DiamondCutFacet');
@@ -50,7 +50,7 @@ export async function deployDiamond() {
 
   // deploy Diamond
   const Diamond = await ethers.getContractFactory('Diamond');
-  const diamond = await Diamond.deploy(owner._address, diamondCutFacet.address);
+  const diamond = await Diamond.deploy(owner.address, diamondCutFacet.address);
   await diamond.deployed();
 
   console.log('Diamond deployed at: ', diamond.address);
@@ -66,7 +66,7 @@ export async function deployDiamond() {
   const FacetNames = [
     'DiamondLoupeFacet',
     'OwnershipFacet',
-    'StratX2Settings',
+    'StratX2Setter',
     'StratX2Facet',
     'StratX2Getter',
   ];
@@ -91,7 +91,7 @@ export async function deployDiamond() {
   const functionCall = diamondInit.interface.encodeFunctionData('init', [
     [
       '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c',
-      owner._address,
+      owner.address,
       farmA.address,
       autoV2.address,
       want.address,

@@ -54,10 +54,12 @@ contract DiamondInit {
 
         s.farmContractAddress = _addresses[8];
         s.pid = _pid;
+        s.lock = 0;
         s.isCAKEStaking = _isCAKEStaking;
         s.isSameAssetDeposit = _isSameAssetDeposit;
 
         s.isAutoComp = _isAutoComp;
+        s._paused = false;
 
         s.uniRouterAddress = _addresses[9];
         s.earnedToAUTOPath = _earnedToAUTOPath;
