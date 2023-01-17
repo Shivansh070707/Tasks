@@ -82,16 +82,7 @@ library LibDiamond {
      */
     event Unpaused(address account);
 
-    function nonreentrantbefore() internal {
-        StratX2Storage storage s = LibDiamond.stratX2Storage();
-        require(s.lock == 0, "Locked");
-        s.lock = 1;
-    }
 
-    function nonreentrantafter() internal {
-        StratX2Storage storage s = LibDiamond.stratX2Storage();
-        s.lock = 0;
-    }
 
     function _msgSender() internal view returns (address) {
         return msg.sender;

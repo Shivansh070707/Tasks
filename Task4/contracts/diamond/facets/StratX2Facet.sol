@@ -2,15 +2,15 @@
 pragma solidity ^0.8.0;
 import {LibDiamond} from "../libraries/LibDiamond.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "../interfaces/IPancakeswapFarm.sol";
 import "../interfaces/IPancakeRouter02.sol";
 import "../interfaces/IWBNB.sol";
-import "../interfaces/IModifier.sol";
 
-contract StratX2Facet is IModifier {
+contract StratX2Facet is ReentrancyGuard {
     using SafeERC20 for IERC20;
 
-    function deposit(uint256 _wantAmt) external nonreentrant returns (uint256) {
+    function deposit(uint256 _wantAmt) external nonReentrant returns (uint256) {
         LibDiamond.StratX2Storage storage s = LibDiamond.stratX2Storage();
 
         require(!LibDiamond.paused(), "Pausable: paused");
@@ -41,7 +41,7 @@ contract StratX2Facet is IModifier {
 
     function withdraw(uint256 _wantAmt)
         external
-        nonreentrant
+        nonReentrant
         returns (uint256)
     {
         require(_wantAmt > 0, "_wantAmt <= 0");
@@ -84,7 +84,7 @@ contract StratX2Facet is IModifier {
     // 2. Converts farm tokens into want tokens
     // 3. Deposits want tokens
 
-    function earn() external nonreentrant {
+    function earn() external nonReentrant {
         LibDiamond.StratX2Storage storage s = LibDiamond.stratX2Storage();
 
         require(!LibDiamond.paused(), "Pausable: paused");

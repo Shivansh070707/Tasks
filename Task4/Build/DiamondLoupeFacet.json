@@ -12,7 +12,6 @@
 				"constant": true,
 				"stateMutability": "view",
 				"payable": false,
-				"gas": 29000000,
 				"inputs": [
 					{
 						"type": "bytes4",
@@ -32,7 +31,6 @@
 				"constant": true,
 				"stateMutability": "view",
 				"payable": false,
-				"gas": 29000000,
 				"inputs": [],
 				"outputs": [
 					{
@@ -47,7 +45,6 @@
 				"constant": true,
 				"stateMutability": "view",
 				"payable": false,
-				"gas": 29000000,
 				"inputs": [
 					{
 						"type": "address",
@@ -67,7 +64,6 @@
 				"constant": true,
 				"stateMutability": "view",
 				"payable": false,
-				"gas": 29000000,
 				"inputs": [],
 				"outputs": [
 					{
@@ -92,7 +88,6 @@
 				"constant": true,
 				"stateMutability": "view",
 				"payable": false,
-				"gas": 29000000,
 				"inputs": [
 					{
 						"type": "bytes4",
