@@ -63,7 +63,7 @@ contract StratX2GetterFacet {
         return s.autoFarmAddress;
     }
 
-    function AUTOAddress() external view returns (address) {
+    function autoAddress() external view returns (address) {
         LibDiamond.StratX2Storage storage s = LibDiamond.stratX2Storage();
         return s.AUTOAddress;
     }

@@ -8,7 +8,7 @@
 		"abi": [
 			{
 				"type": "function",
-				"name": "AUTOAddress",
+				"name": "autoAddress",
 				"constant": true,
 				"stateMutability": "view",
 				"payable": false,

@@ -48,7 +48,6 @@ library LibDiamond {
         address AUTOAddress;
         address govAddress; // timelock contract
         bool onlyGov;
-        uint256 num;
         uint256 lastEarnBlock;
         uint256 wantLockedTotal;
         uint256 sharesTotal;
@@ -84,11 +83,8 @@ library LibDiamond {
     event Unpaused(address account);
 
     function nonreentrantbefore() internal {
-        console.log("inside modifier");
         StratX2Storage storage s = LibDiamond.stratX2Storage();
-        console.log("lock value after entering", s.lock);
         require(s.lock == 0, "Locked");
-        console.log("lock value", s.lock);
         s.lock = 1;
     }
 

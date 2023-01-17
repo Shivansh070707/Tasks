@@ -10,7 +10,7 @@ import "../interfaces/IModifier.sol";
 contract StratX2Facet is IModifier {
     using SafeERC20 for IERC20;
 
-    function deposit(uint256 _wantAmt) public nonreentrant returns (uint256) {
+    function deposit(uint256 _wantAmt) external nonreentrant returns (uint256) {
         LibDiamond.StratX2Storage storage s = LibDiamond.stratX2Storage();
 
         require(!LibDiamond.paused(), "Pausable: paused");
@@ -39,33 +39,11 @@ contract StratX2Facet is IModifier {
         return sharesAdded;
     }
 
-    function _farm() internal {
-        LibDiamond.StratX2Storage storage s = LibDiamond.stratX2Storage();
-        require(s.isAutoComp, "!isAutoComp");
-        uint256 wantAmt = IERC20(s.wantAddress).balanceOf(address(this));
-        s.wantLockedTotal = s.wantLockedTotal + (wantAmt);
-        IERC20(s.wantAddress).safeIncreaseAllowance(
-            s.farmContractAddress,
-            wantAmt
-        );
-
-        if (s.isCAKEStaking) {
-            IPancakeswapFarm(s.farmContractAddress).enterStaking(wantAmt); // Just for CAKE staking, we dont use deposit()
-        } else {
-            IPancakeswapFarm(s.farmContractAddress).deposit(s.pid, wantAmt);
-        }
-    }
-
-    function _unfarm(uint256 _wantAmt) internal {
-        LibDiamond.StratX2Storage storage s = LibDiamond.stratX2Storage();
-        if (s.isCAKEStaking) {
-            IPancakeswapFarm(s.farmContractAddress).leaveStaking(_wantAmt); // Just for CAKE staking, we dont use withdraw()
-        } else {
-            IPancakeswapFarm(s.farmContractAddress).withdraw(s.pid, _wantAmt);
-        }
-    }
-
-    function withdraw(uint256 _wantAmt) public nonreentrant returns (uint256) {
+    function withdraw(uint256 _wantAmt)
+        external
+        nonreentrant
+        returns (uint256)
+    {
         require(_wantAmt > 0, "_wantAmt <= 0");
         LibDiamond.StratX2Storage storage s = LibDiamond.stratX2Storage();
 
@@ -106,7 +84,7 @@ contract StratX2Facet is IModifier {
     // 2. Converts farm tokens into want tokens
     // 3. Deposits want tokens
 
-    function earn() public nonreentrant {
+    function earn() external nonreentrant {
         LibDiamond.StratX2Storage storage s = LibDiamond.stratX2Storage();
 
         require(!LibDiamond.paused(), "Pausable: paused");
@@ -125,8 +103,8 @@ contract StratX2Facet is IModifier {
         // Converts farm tokens into want tokens
         uint256 earnedAmt = IERC20(s.earnedAddress).balanceOf(address(this));
 
-        earnedAmt = distributeFees(earnedAmt);
-        earnedAmt = buyBack(earnedAmt);
+        earnedAmt = _distributeFees(earnedAmt);
+        earnedAmt = _buyBack(earnedAmt);
 
         if (s.isCAKEStaking || s.isSameAssetDeposit) {
             s.lastEarnBlock = block.number;
@@ -193,52 +171,7 @@ contract StratX2Facet is IModifier {
         _farm();
     }
 
-    function buyBack(uint256 _earnedAmt) internal returns (uint256) {
-        LibDiamond.StratX2Storage storage s = LibDiamond.stratX2Storage();
-        if (s.buyBackRate <= 0) {
-            return _earnedAmt;
-        }
-
-        uint256 buyBackAmt = (_earnedAmt * (s.buyBackRate)) /
-            (s.buyBackRateMax);
-
-        if (s.earnedAddress == s.AUTOAddress) {
-            IERC20(s.earnedAddress).safeTransfer(s.buyBackAddress, buyBackAmt);
-        } else {
-            IERC20(s.earnedAddress).safeIncreaseAllowance(
-                s.uniRouterAddress,
-                buyBackAmt
-            );
-
-            _safeSwap(
-                s.uniRouterAddress,
-                buyBackAmt,
-                s.slippageFactor,
-                s.earnedToAUTOPath,
-                s.buyBackAddress,
-                block.timestamp + (600)
-            );
-        }
-
-        return _earnedAmt - (buyBackAmt);
-    }
-
-    function distributeFees(uint256 _earnedAmt) internal returns (uint256) {
-        LibDiamond.StratX2Storage storage s = LibDiamond.stratX2Storage();
-        if (_earnedAmt > 0) {
-            // Performance fee
-            if (s.controllerFee > 0) {
-                uint256 fee = (_earnedAmt * (s.controllerFee)) /
-                    (s.controllerFeeMax);
-                IERC20(s.earnedAddress).safeTransfer(s.rewardsAddress, fee);
-                _earnedAmt = _earnedAmt - (fee);
-            }
-        }
-
-        return _earnedAmt;
-    }
-
-    function convertDustToEarned() public {
+    function convertDustToEarned() external {
         LibDiamond.StratX2Storage storage s = LibDiamond.stratX2Storage();
         require(!LibDiamond.paused(), "Pausable: paused");
         require(s.isAutoComp, "!isAutoComp");
@@ -289,12 +222,89 @@ contract StratX2Facet is IModifier {
         address _token,
         uint256 _amount,
         address _to
-    ) public {
+    ) external {
         LibDiamond.StratX2Storage storage s = LibDiamond.stratX2Storage();
         require(msg.sender == s.govAddress, "!gov");
         require(_token != s.earnedAddress, "!safe,token is Earned address");
         require(_token != s.wantAddress, "!safe,token is want address");
         IERC20(_token).safeTransfer(_to, _amount);
+    }
+
+    function wrapBNB() external {
+        LibDiamond.StratX2Storage storage s = LibDiamond.stratX2Storage();
+        require(msg.sender == s.govAddress, "!gov");
+        _wrapBNB();
+    }
+
+    function _farm() internal {
+        LibDiamond.StratX2Storage storage s = LibDiamond.stratX2Storage();
+        require(s.isAutoComp, "!isAutoComp");
+        uint256 wantAmt = IERC20(s.wantAddress).balanceOf(address(this));
+        s.wantLockedTotal = s.wantLockedTotal + (wantAmt);
+        IERC20(s.wantAddress).safeIncreaseAllowance(
+            s.farmContractAddress,
+            wantAmt
+        );
+
+        if (s.isCAKEStaking) {
+            IPancakeswapFarm(s.farmContractAddress).enterStaking(wantAmt); // Just for CAKE staking, we dont use deposit()
+        } else {
+            IPancakeswapFarm(s.farmContractAddress).deposit(s.pid, wantAmt);
+        }
+    }
+
+    function _unfarm(uint256 _wantAmt) internal {
+        LibDiamond.StratX2Storage storage s = LibDiamond.stratX2Storage();
+        if (s.isCAKEStaking) {
+            IPancakeswapFarm(s.farmContractAddress).leaveStaking(_wantAmt); // Just for CAKE staking, we dont use withdraw()
+        } else {
+            IPancakeswapFarm(s.farmContractAddress).withdraw(s.pid, _wantAmt);
+        }
+    }
+
+    function _buyBack(uint256 _earnedAmt) internal returns (uint256) {
+        LibDiamond.StratX2Storage storage s = LibDiamond.stratX2Storage();
+        if (s.buyBackRate <= 0) {
+            return _earnedAmt;
+        }
+
+        uint256 buyBackAmt = (_earnedAmt * (s.buyBackRate)) /
+            (s.buyBackRateMax);
+
+        if (s.earnedAddress == s.AUTOAddress) {
+            IERC20(s.earnedAddress).safeTransfer(s.buyBackAddress, buyBackAmt);
+        } else {
+            IERC20(s.earnedAddress).safeIncreaseAllowance(
+                s.uniRouterAddress,
+                buyBackAmt
+            );
+
+            _safeSwap(
+                s.uniRouterAddress,
+                buyBackAmt,
+                s.slippageFactor,
+                s.earnedToAUTOPath,
+                s.buyBackAddress,
+                block.timestamp + (600)
+            );
+        }
+
+        return _earnedAmt - (buyBackAmt);
+    }
+
+    function _distributeFees(uint256 _earnedAmt) internal returns (uint256) {
+        LibDiamond.StratX2Storage storage s = LibDiamond.stratX2Storage();
+        if (_earnedAmt > 0) {
+            // Performance fee
+            if (s.controllerFee > 0) {
+                uint256 fee = (_earnedAmt * (s.controllerFee)) /
+                    (s.controllerFeeMax);
+                IERC20(s.earnedAddress).safeTransfer(s.rewardsAddress, fee);
+                _earnedAmt = _earnedAmt - (fee);
+            }
+        }
+
+        return _earnedAmt;
     }
 
     function _wrapBNB() internal {
@@ -304,12 +314,6 @@ contract StratX2Facet is IModifier {
         if (bnbBal > 0) {
             IWBNB(s.wbnbAddress).deposit{value: bnbBal}(); // BNB -> WBNB
         }
-    }
-
-    function wrapBNB() public {
-        LibDiamond.StratX2Storage storage s = LibDiamond.stratX2Storage();
-        require(msg.sender == s.govAddress, "!gov");
-        _wrapBNB();
     }
 
     function _safeSwap(
@@ -332,17 +336,5 @@ contract StratX2Facet is IModifier {
                 _to,
                 _deadline
             );
-    }
-
-    function checkreentrancy() external nonreentrant {
-        LibDiamond.StratX2Storage storage s = LibDiamond.stratX2Storage();
-        s.num++;
-        (bool success, ) = address(msg.sender).call(" ");
-        require(success, "internal check failed");
-    }
-
-    function getnum() external view returns (uint256) {
-        LibDiamond.StratX2Storage storage s = LibDiamond.stratX2Storage();
-        return s.num;
     }
 }

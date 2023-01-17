@@ -8,15 +8,6 @@
 		"abi": [
 			{
 				"type": "function",
-				"name": "checkreentrancy",
-				"constant": false,
-				"payable": false,
-				"gas": 29000000,
-				"inputs": [],
-				"outputs": []
-			},
-			{
-				"type": "function",
 				"name": "convertDustToEarned",
 				"constant": false,
 				"payable": false,
@@ -50,20 +41,6 @@
 				"gas": 29000000,
 				"inputs": [],
 				"outputs": []
-			},
-			{
-				"type": "function",
-				"name": "getnum",
-				"constant": true,
-				"stateMutability": "view",
-				"payable": false,
-				"gas": 29000000,
-				"inputs": [],
-				"outputs": [
-					{
-						"type": "uint256"
-					}
-				]
 			},
 			{
 				"type": "function",
