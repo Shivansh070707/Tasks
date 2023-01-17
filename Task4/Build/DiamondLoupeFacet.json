@@ -1,6 +1,6 @@
 {
 	"data": {
-		"address": "0x7A28cf37763279F774916b85b5ef8b64AB421f79",
+		"address": "0xf5C3953Ae4639806fcbCC3196f71dd81B0da4348",
 		"network": {
 			"name": "unknown",
 			"chainId": 31337
@@ -12,6 +12,7 @@
 				"constant": true,
 				"stateMutability": "view",
 				"payable": false,
+				"gas": 1099510627775,
 				"inputs": [
 					{
 						"type": "bytes4",
@@ -31,6 +32,7 @@
 				"constant": true,
 				"stateMutability": "view",
 				"payable": false,
+				"gas": 1099510627775,
 				"inputs": [],
 				"outputs": [
 					{
@@ -45,6 +47,7 @@
 				"constant": true,
 				"stateMutability": "view",
 				"payable": false,
+				"gas": 1099510627775,
 				"inputs": [
 					{
 						"type": "address",
@@ -64,6 +67,7 @@
 				"constant": true,
 				"stateMutability": "view",
 				"payable": false,
+				"gas": 1099510627775,
 				"inputs": [],
 				"outputs": [
 					{
@@ -88,6 +92,7 @@
 				"constant": true,
 				"stateMutability": "view",
 				"payable": false,
+				"gas": 1099510627775,
 				"inputs": [
 					{
 						"type": "bytes4",

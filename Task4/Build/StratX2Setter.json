@@ -1,6 +1,6 @@
 {
 	"data": {
-		"address": "0xB7ca895F81F20e05A5eb11B05Cbaab3DAe5e23cd",
+		"address": "0xdb54fa574a3e8c6aC784e1a5cdB575A737622CFf",
 		"network": {
 			"name": "unknown",
 			"chainId": 31337
@@ -103,6 +103,7 @@
 				"name": "pause",
 				"constant": false,
 				"payable": false,
+				"gas": 1099510627775,
 				"inputs": [],
 				"outputs": []
 			},
@@ -111,6 +112,7 @@
 				"name": "setBuyBackAddress",
 				"constant": false,
 				"payable": false,
+				"gas": 1099510627775,
 				"inputs": [
 					{
 						"type": "address",
@@ -124,6 +126,7 @@
 				"name": "setGov",
 				"constant": false,
 				"payable": false,
+				"gas": 1099510627775,
 				"inputs": [
 					{
 						"type": "address",
@@ -137,6 +140,7 @@
 				"name": "setOnlyGov",
 				"constant": false,
 				"payable": false,
+				"gas": 1099510627775,
 				"inputs": [
 					{
 						"type": "bool",
@@ -150,6 +154,7 @@
 				"name": "setRewardsAddress",
 				"constant": false,
 				"payable": false,
+				"gas": 1099510627775,
 				"inputs": [
 					{
 						"type": "address",
@@ -163,6 +168,7 @@
 				"name": "setSettings",
 				"constant": false,
 				"payable": false,
+				"gas": 1099510627775,
 				"inputs": [
 					{
 						"type": "uint256",
@@ -192,6 +198,7 @@
 				"name": "setUniRouterAddress",
 				"constant": false,
 				"payable": false,
+				"gas": 1099510627775,
 				"inputs": [
 					{
 						"type": "address",
@@ -205,6 +212,7 @@
 				"name": "unpause",
 				"constant": false,
 				"payable": false,
+				"gas": 1099510627775,
 				"inputs": [],
 				"outputs": []
 			}
