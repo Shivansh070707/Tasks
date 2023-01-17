@@ -25,7 +25,7 @@ export async function main() {
     params: [address],
   });
 
-  owner = ethers.provider.getSigner(address);
+  owner = await ethers.getSigner(address);
 
   [reward, otherAccount] = await ethers.getSigners();
 
@@ -186,7 +186,7 @@ export async function main() {
   stratA = await StratA.connect(owner).deploy(
     [
       '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c',
-      owner._address,
+      owner.address,
       farmA.address,
       autoV2.address,
       want.address,
@@ -214,7 +214,7 @@ export async function main() {
   stratB = await StratB.connect(owner).deploy(
     [
       '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c',
-      owner._address,
+      owner.address,
       farmB.address,
       xrp.address,
       want.address,
@@ -253,15 +253,15 @@ export async function main() {
     autoV2 address =${autoV2.address},
     farmA address =${farmA.address};
     farmB address =${farmB.address};
-    owner address =${owner._address};
+    owner address =${owner.address};
     otherAccount address =${otherAccount.address};
     stratA address =${stratA.address};
     stratB address =${stratB.address};
     pool address =${pool.address};
     want address =${want.address};
     reward address =${reward.address};
-    owner want balance =${await want.balanceOf(owner._address)}
-    xrp balance after ${await xrp.balanceOf(owner._address)};
+    owner want balance =${await want.balanceOf(owner.address)}
+    xrp balance after ${await xrp.balanceOf(owner.address)};
     
     `);
   return {

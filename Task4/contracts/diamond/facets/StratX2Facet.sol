@@ -1,44 +1,19 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
-import "../libraries/LibDiamond.sol";
+import {LibDiamond} from "../libraries/LibDiamond.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "../interfaces/IPancakeswapFarm.sol";
 import "../interfaces/IPancakeRouter02.sol";
-import "hardhat/console.sol";
+import "../interfaces/IWBNB.sol";
 
-interface IWBNB is IERC20 {
-    function deposit() external payable;
-
-    function withdraw(uint256 wad) external;
-}
-
-contract StratX2Facet is ReentrancyGuard, Pausable {
+contract StratX2Facet is ReentrancyGuard {
     using SafeERC20 for IERC20;
-    modifier onlyAllowGov() {
+
+    function deposit(uint256 _wantAmt) external nonReentrant returns (uint256) {
         LibDiamond.StratX2Storage storage s = LibDiamond.stratX2Storage();
-        require(msg.sender == s.govAddress, "!gov");
-        _;
-    }
 
-    function pause() public virtual onlyAllowGov {
-        _pause();
-    }
-
-    function unpause() public virtual onlyAllowGov {
-        _unpause();
-    }
-
-    function deposit(address _userAddress, uint256 _wantAmt)
-        public
-        virtual
-        nonReentrant
-        whenNotPaused
-        returns (uint256)
-    {
-        console.log("IM diamond");
-        LibDiamond.StratX2Storage storage s = LibDiamond.stratX2Storage();
+        require(!LibDiamond.paused(), "Pausable: paused");
         IERC20(s.wantAddress).safeTransferFrom(
             address(msg.sender),
             address(this),
@@ -59,39 +34,13 @@ contract StratX2Facet is ReentrancyGuard, Pausable {
         } else {
             s.wantLockedTotal = s.wantLockedTotal + (_wantAmt);
         }
+        s.lock = 0;
 
         return sharesAdded;
     }
 
-    function _farm() internal virtual {
-        LibDiamond.StratX2Storage storage s = LibDiamond.stratX2Storage();
-        require(s.isAutoComp, "!isAutoComp");
-        uint256 wantAmt = IERC20(s.wantAddress).balanceOf(address(this));
-        s.wantLockedTotal = s.wantLockedTotal + (wantAmt);
-        IERC20(s.wantAddress).safeIncreaseAllowance(
-            s.farmContractAddress,
-            wantAmt
-        );
-
-        if (s.isCAKEStaking) {
-            IPancakeswapFarm(s.farmContractAddress).enterStaking(wantAmt); // Just for CAKE staking, we dont use deposit()
-        } else {
-            IPancakeswapFarm(s.farmContractAddress).deposit(s.pid, wantAmt);
-        }
-    }
-
-    function _unfarm(uint256 _wantAmt) internal virtual {
-        LibDiamond.StratX2Storage storage s = LibDiamond.stratX2Storage();
-        if (s.isCAKEStaking) {
-            IPancakeswapFarm(s.farmContractAddress).leaveStaking(_wantAmt); // Just for CAKE staking, we dont use withdraw()
-        } else {
-            IPancakeswapFarm(s.farmContractAddress).withdraw(s.pid, _wantAmt);
-        }
-    }
-
-    function withdraw(address _userAddress, uint256 _wantAmt)
-        public
-        virtual
+    function withdraw(uint256 _wantAmt)
+        external
         nonReentrant
         returns (uint256)
     {
@@ -135,8 +84,10 @@ contract StratX2Facet is ReentrancyGuard, Pausable {
     // 2. Converts farm tokens into want tokens
     // 3. Deposits want tokens
 
-    function earn() public virtual nonReentrant whenNotPaused {
+    function earn() external nonReentrant {
         LibDiamond.StratX2Storage storage s = LibDiamond.stratX2Storage();
+
+        require(!LibDiamond.paused(), "Pausable: paused");
         require(s.isAutoComp, "!isAutoComp");
         if (s.onlyGov) {
             require(msg.sender == s.govAddress, "!gov");
@@ -152,8 +103,8 @@ contract StratX2Facet is ReentrancyGuard, Pausable {
         // Converts farm tokens into want tokens
         uint256 earnedAmt = IERC20(s.earnedAddress).balanceOf(address(this));
 
-        earnedAmt = distributeFees(earnedAmt);
-        earnedAmt = buyBack(earnedAmt);
+        earnedAmt = _distributeFees(earnedAmt);
+        earnedAmt = _buyBack(earnedAmt);
 
         if (s.isCAKEStaking || s.isSameAssetDeposit) {
             s.lastEarnBlock = block.number;
@@ -220,57 +171,9 @@ contract StratX2Facet is ReentrancyGuard, Pausable {
         _farm();
     }
 
-    function buyBack(uint256 _earnedAmt) internal virtual returns (uint256) {
+    function convertDustToEarned() external {
         LibDiamond.StratX2Storage storage s = LibDiamond.stratX2Storage();
-        if (s.buyBackRate <= 0) {
-            return _earnedAmt;
-        }
-
-        uint256 buyBackAmt = (_earnedAmt * (s.buyBackRate)) /
-            (s.buyBackRateMax);
-
-        if (s.earnedAddress == s.AUTOAddress) {
-            IERC20(s.earnedAddress).safeTransfer(s.buyBackAddress, buyBackAmt);
-        } else {
-            IERC20(s.earnedAddress).safeIncreaseAllowance(
-                s.uniRouterAddress,
-                buyBackAmt
-            );
-
-            _safeSwap(
-                s.uniRouterAddress,
-                buyBackAmt,
-                s.slippageFactor,
-                s.earnedToAUTOPath,
-                s.buyBackAddress,
-                block.timestamp + (600)
-            );
-        }
-
-        return _earnedAmt - (buyBackAmt);
-    }
-
-    function distributeFees(uint256 _earnedAmt)
-        internal
-        virtual
-        returns (uint256)
-    {
-        LibDiamond.StratX2Storage storage s = LibDiamond.stratX2Storage();
-        if (_earnedAmt > 0) {
-            // Performance fee
-            if (s.controllerFee > 0) {
-                uint256 fee = (_earnedAmt * (s.controllerFee)) /
-                    (s.controllerFeeMax);
-                IERC20(s.earnedAddress).safeTransfer(s.rewardsAddress, fee);
-                _earnedAmt = _earnedAmt - (fee);
-            }
-        }
-
-        return _earnedAmt;
-    }
-
-    function convertDustToEarned() public virtual whenNotPaused {
-        LibDiamond.StratX2Storage storage s = LibDiamond.stratX2Storage();
+        require(!LibDiamond.paused(), "Pausable: paused");
         require(s.isAutoComp, "!isAutoComp");
         require(!s.isCAKEStaking, "isCAKEStaking");
 
@@ -319,24 +222,98 @@ contract StratX2Facet is ReentrancyGuard, Pausable {
         address _token,
         uint256 _amount,
         address _to
-    ) public virtual onlyAllowGov {
+    ) external {
         LibDiamond.StratX2Storage storage s = LibDiamond.stratX2Storage();
-        require(_token != s.earnedAddress, "!safe");
-        require(_token != s.wantAddress, "!safe");
+        require(msg.sender == s.govAddress, "!gov");
+        require(_token != s.earnedAddress, "!safe,token is Earned address");
+        require(_token != s.wantAddress, "!safe,token is want address");
         IERC20(_token).safeTransfer(_to, _amount);
     }
 
-    function _wrapBNB() internal virtual {
+    function wrapBNB() external {
+        LibDiamond.StratX2Storage storage s = LibDiamond.stratX2Storage();
+        require(msg.sender == s.govAddress, "!gov");
+        _wrapBNB();
+    }
+
+    function _farm() internal {
+        LibDiamond.StratX2Storage storage s = LibDiamond.stratX2Storage();
+        require(s.isAutoComp, "!isAutoComp");
+        uint256 wantAmt = IERC20(s.wantAddress).balanceOf(address(this));
+        s.wantLockedTotal = s.wantLockedTotal + (wantAmt);
+        IERC20(s.wantAddress).safeIncreaseAllowance(
+            s.farmContractAddress,
+            wantAmt
+        );
+
+        if (s.isCAKEStaking) {
+            IPancakeswapFarm(s.farmContractAddress).enterStaking(wantAmt); // Just for CAKE staking, we dont use deposit()
+        } else {
+            IPancakeswapFarm(s.farmContractAddress).deposit(s.pid, wantAmt);
+        }
+    }
+
+    function _unfarm(uint256 _wantAmt) internal {
+        LibDiamond.StratX2Storage storage s = LibDiamond.stratX2Storage();
+        if (s.isCAKEStaking) {
+            IPancakeswapFarm(s.farmContractAddress).leaveStaking(_wantAmt); // Just for CAKE staking, we dont use withdraw()
+        } else {
+            IPancakeswapFarm(s.farmContractAddress).withdraw(s.pid, _wantAmt);
+        }
+    }
+
+    function _buyBack(uint256 _earnedAmt) internal returns (uint256) {
+        LibDiamond.StratX2Storage storage s = LibDiamond.stratX2Storage();
+        if (s.buyBackRate <= 0) {
+            return _earnedAmt;
+        }
+
+        uint256 buyBackAmt = (_earnedAmt * (s.buyBackRate)) /
+            (s.buyBackRateMax);
+
+        if (s.earnedAddress == s.AUTOAddress) {
+            IERC20(s.earnedAddress).safeTransfer(s.buyBackAddress, buyBackAmt);
+        } else {
+            IERC20(s.earnedAddress).safeIncreaseAllowance(
+                s.uniRouterAddress,
+                buyBackAmt
+            );
+
+            _safeSwap(
+                s.uniRouterAddress,
+                buyBackAmt,
+                s.slippageFactor,
+                s.earnedToAUTOPath,
+                s.buyBackAddress,
+                block.timestamp + (600)
+            );
+        }
+
+        return _earnedAmt - (buyBackAmt);
+    }
+
+    function _distributeFees(uint256 _earnedAmt) internal returns (uint256) {
+        LibDiamond.StratX2Storage storage s = LibDiamond.stratX2Storage();
+        if (_earnedAmt > 0) {
+            // Performance fee
+            if (s.controllerFee > 0) {
+                uint256 fee = (_earnedAmt * (s.controllerFee)) /
+                    (s.controllerFeeMax);
+                IERC20(s.earnedAddress).safeTransfer(s.rewardsAddress, fee);
+                _earnedAmt = _earnedAmt - (fee);
+            }
+        }
+
+        return _earnedAmt;
+    }
+
+    function _wrapBNB() internal {
         LibDiamond.StratX2Storage storage s = LibDiamond.stratX2Storage();
         // BNB -> WBNB
         uint256 bnbBal = address(this).balance;
         if (bnbBal > 0) {
             IWBNB(s.wbnbAddress).deposit{value: bnbBal}(); // BNB -> WBNB
         }
-    }
-
-    function wrapBNB() public virtual onlyAllowGov {
-        _wrapBNB();
     }
 
     function _safeSwap(
@@ -346,7 +323,7 @@ contract StratX2Facet is ReentrancyGuard, Pausable {
         address[] memory _path,
         address _to,
         uint256 _deadline
-    ) internal virtual {
+    ) internal {
         uint256[] memory amounts = IPancakeRouter02(_uniRouterAddress)
             .getAmountsOut(_amountIn, _path);
         uint256 amountOut = amounts[amounts.length - (1)];

@@ -21,7 +21,7 @@ contract StratX2_PCS is StratX2 {
         wbnbAddress = _addresses[0];
         govAddress = _addresses[1];
         autoFarmAddress = _addresses[2];
-        AUTOAddress = _addresses[3];
+        autoAddress = _addresses[3];
 
         wantAddress = _addresses[4];
         token0Address = _addresses[5];

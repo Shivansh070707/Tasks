@@ -52,10 +52,13 @@ describe('Test', () => {
 
     stratx2 = await ethers.getContractAt('StratX2Facet', diamondAddress);
     stratx2Settings = await ethers.getContractAt(
-      'StratX2Settings',
+      'StratX2SetterFacet',
       diamondAddress
     );
-    stratx2getter = await ethers.getContractAt('StratX2Getter', diamondAddress);
+    stratx2getter = await ethers.getContractAt(
+      'StratX2GetterFacet',
+      diamondAddress
+    );
   });
 
   describe('test - diamond', () => {
@@ -123,30 +126,29 @@ describe('Test', () => {
       expect(slippageFactor).to.equal(950);
     });
     it('should deposit want tokens in diamond StratX', async () => {
-      console.log(await want.balanceOf(owner._address));
+      console.log(await want.balanceOf(owner.address));
 
       await want
         .connect(owner)
         .approve(diamondAddress, ethers.utils.parseUnits('10', 'ether'));
+
       await expect(
-        stratx2
-          .connect(owner)
-          .deposit(owner._address, ethers.utils.parseEther('10'))
+        stratx2.connect(owner).deposit(ethers.utils.parseEther('10'))
       ).to.changeTokenBalances(
         want,
-        [owner._address, stratB.address],
+        [owner.address, stratB.address],
         [ethers.utils.parseEther('-10'), ethers.utils.parseEther('10')]
       );
     });
     it('should deposit want tokens in farmA -> Diamond Strat -> FarmB ->StratB', async () => {
       await want
         .connect(owner)
-        .approve(farmA.address, ethers.utils.parseUnits('10', 'ether'));
+        .approve(farmA.address, ethers.utils.parseEther('10'));
       await expect(
         farmA.connect(owner).deposit(0, ethers.utils.parseEther('10'))
       ).to.changeTokenBalances(
         want,
-        [owner._address, stratB.address],
+        [owner.address, stratB.address],
         [ethers.utils.parseEther('-10'), ethers.utils.parseEther('10')]
       );
     });
@@ -155,15 +157,13 @@ describe('Test', () => {
         farmA.connect(owner).withdraw(0, ethers.utils.parseUnits('1', 'ether'))
       ).to.changeTokenBalances(
         want,
-        [owner._address, stratB.address],
+        [owner.address, stratB.address],
         [ethers.utils.parseEther('1'), ethers.utils.parseEther('-1')]
       );
     });
     it('Should withdraw want tokens and that tokens will be transferred to farmA', async () => {
       await expect(
-        stratx2
-          .connect(owner)
-          .withdraw(owner._address, ethers.utils.parseUnits('1', 'ether'))
+        stratx2.connect(owner).withdraw(ethers.utils.parseUnits('1', 'ether'))
       ).to.changeTokenBalances(
         want,
         [farmA.address, stratB.address],
@@ -174,12 +174,12 @@ describe('Test', () => {
       let currentBlockTime = await time.latest();
       let one_day = currentBlockTime + 24 * 60 * 60;
       await time.increaseTo(one_day);
-      let earn_balance_before = await autoV21.balanceOf(owner._address);
+      let earn_balance_before = await autoV21.balanceOf(owner.address);
 
       await farmA
         .connect(owner)
         .withdraw(0, ethers.utils.parseUnits('1', 'ether'));
-      let earn_balance_after = await autoV21.balanceOf(owner._address);
+      let earn_balance_after = await autoV21.balanceOf(owner.address);
 
       expect(earn_balance_after - earn_balance_before).to.be.greaterThan(0);
     });
@@ -207,6 +207,33 @@ describe('Test', () => {
       expect(await stratx2getter.controllerFee()).to.equal(250);
       expect(await stratx2getter.buyBackRate()).to.equal(500);
       expect(await stratx2getter.slippageFactor()).to.equal(500);
+    });
+  });
+  describe('Errors', () => {
+    it('Should throw error when caller is not gov ', async () => {
+      await expect(stratx2Settings.setGov(owner.address)).to.be.revertedWith(
+        '!gov'
+      );
+    });
+    // it('should throw error when enter two fun', async () => {
+    //   let Check = await ethers.getContractFactory('ReentrancyChecker');
+    //   let check = await Check.deploy(diamondAddress);
+    //   await check.attack();
+    //   let tx = await check.attack();
+
+    //   let receipt = await tx.wait();
+    //   console.log(
+    //     receipt.events?.filter((x) => {
+    //       return x.event == 'Response';
+    //     })
+    //   );
+    //   console.log(await stratx2.getnum());
+    // });
+    it('should throw error when paused', async () => {
+      await stratx2Settings.connect(owner).pause();
+      expect(
+        stratx2.connect(owner).deposit(ethers.utils.parseEther('1'))
+      ).to.be.revertedWith('Pausable: paused');
     });
   });
 });

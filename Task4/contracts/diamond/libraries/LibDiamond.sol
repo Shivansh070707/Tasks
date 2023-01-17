@@ -31,9 +31,11 @@ library LibDiamond {
         address contractOwner;
     }
     struct StratX2Storage {
+        bool _paused;
         bool isCAKEStaking; // only for staking CAKE using pancakeswap's native CAKE staking contract.
         bool isSameAssetDeposit;
-        bool isAutoComp; // this vault is purely for staking. eg. WBNB-AUTO staking vault.
+        bool isAutoComp;
+        uint8 lock; // this vault is purely for staking. eg. WBNB-AUTO staking vault.
         address farmContractAddress; // address of farm, eg, PCS, Thugs etc.
         uint256 pid; // pid of pool in farmContractAddress
         address wantAddress;
@@ -70,6 +72,43 @@ library LibDiamond {
         address[] token0ToEarnedPath;
         address[] token1ToEarnedPath;
         address[] earnedToToken0Path;
+    }
+    //  */ @dev Emitted when the pause is triggered by `account`.
+    //  */
+    event Paused(address account);
+
+    /**
+     * @dev Emitted when the pause is lifted by `account`.
+     */
+    event Unpaused(address account);
+
+
+
+    function _msgSender() internal view returns (address) {
+        return msg.sender;
+    }
+
+    function _msgData() internal pure returns (bytes calldata) {
+        return msg.data;
+    }
+
+    function paused() internal view returns (bool) {
+        StratX2Storage storage s = LibDiamond.stratX2Storage();
+        return s._paused;
+    }
+
+    function _pause() internal {
+        StratX2Storage storage s = LibDiamond.stratX2Storage();
+        require(!paused(), "Pausable: paused");
+        s._paused = true;
+        emit Paused(_msgSender());
+    }
+
+    function _unpause() internal {
+        StratX2Storage storage s = LibDiamond.stratX2Storage();
+        require(paused(), "Pausable: not paused");
+        s._paused = false;
+        emit Unpaused(_msgSender());
     }
 
     function diamondStorage()

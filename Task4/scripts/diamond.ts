@@ -26,10 +26,13 @@ export async function deploy() {
 
   stratx2 = await ethers.getContractAt('StratX2Facet', diamondAddress);
   stratx2Settings = await ethers.getContractAt(
-    'StratX2Settings',
+    'StratX2SetterFacet',
     diamondAddress
   );
-  stratx2getter = await ethers.getContractAt('StratX2Getter', diamondAddress);
+  stratx2getter = await ethers.getContractAt(
+    'StratX2GetterFacet',
+    diamondAddress
+  );
 }
 
 deploy().catch((error) => {

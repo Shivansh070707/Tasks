@@ -1,5 +1,6 @@
 import { HardhatUserConfig } from 'hardhat/config';
 import '@nomicfoundation/hardhat-toolbox';
+import 'solidity-coverage';
 
 import 'hardhat-contract-sizer';
 import * as dotenv from 'dotenv';
@@ -11,7 +12,7 @@ const config: HardhatUserConfig = {
   solidity: {
     compilers: [
       {
-        version: '0.8.14',
+        version: '0.8.17',
         settings: {
           optimizer: {
             enabled: true,
@@ -42,7 +43,7 @@ const config: HardhatUserConfig = {
   contractSizer: {
     alphaSort: true,
     disambiguatePaths: false,
-    runOnCompile: false,
+    runOnCompile: true,
     strict: true,
     only: [],
   },
