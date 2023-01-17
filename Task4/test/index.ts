@@ -52,10 +52,13 @@ describe('Test', () => {
 
     stratx2 = await ethers.getContractAt('StratX2Facet', diamondAddress);
     stratx2Settings = await ethers.getContractAt(
-      'StratX2Setter',
+      'StratX2SetterFacet',
       diamondAddress
     );
-    stratx2getter = await ethers.getContractAt('StratX2Getter', diamondAddress);
+    stratx2getter = await ethers.getContractAt(
+      'StratX2GetterFacet',
+      diamondAddress
+    );
   });
 
   describe('test - diamond', () => {

@@ -103,7 +103,7 @@
 				"name": "pause",
 				"constant": false,
 				"payable": false,
-				"gas": 29000000,
+				"gas": 1099510627775,
 				"inputs": [],
 				"outputs": []
 			},
@@ -112,7 +112,7 @@
 				"name": "setBuyBackAddress",
 				"constant": false,
 				"payable": false,
-				"gas": 29000000,
+				"gas": 1099510627775,
 				"inputs": [
 					{
 						"type": "address",
@@ -126,7 +126,7 @@
 				"name": "setGov",
 				"constant": false,
 				"payable": false,
-				"gas": 29000000,
+				"gas": 1099510627775,
 				"inputs": [
 					{
 						"type": "address",
@@ -140,7 +140,7 @@
 				"name": "setOnlyGov",
 				"constant": false,
 				"payable": false,
-				"gas": 29000000,
+				"gas": 1099510627775,
 				"inputs": [
 					{
 						"type": "bool",
@@ -154,7 +154,7 @@
 				"name": "setRewardsAddress",
 				"constant": false,
 				"payable": false,
-				"gas": 29000000,
+				"gas": 1099510627775,
 				"inputs": [
 					{
 						"type": "address",
@@ -168,7 +168,7 @@
 				"name": "setSettings",
 				"constant": false,
 				"payable": false,
-				"gas": 29000000,
+				"gas": 1099510627775,
 				"inputs": [
 					{
 						"type": "uint256",
@@ -198,7 +198,7 @@
 				"name": "setUniRouterAddress",
 				"constant": false,
 				"payable": false,
-				"gas": 29000000,
+				"gas": 1099510627775,
 				"inputs": [
 					{
 						"type": "address",
@@ -212,7 +212,7 @@
 				"name": "unpause",
 				"constant": false,
 				"payable": false,
-				"gas": 29000000,
+				"gas": 1099510627775,
 				"inputs": [],
 				"outputs": []
 			}

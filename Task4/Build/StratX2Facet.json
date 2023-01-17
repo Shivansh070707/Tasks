@@ -8,19 +8,10 @@
 		"abi": [
 			{
 				"type": "function",
-				"name": "checkreentrancy",
-				"constant": false,
-				"payable": false,
-				"gas": 29000000,
-				"inputs": [],
-				"outputs": []
-			},
-			{
-				"type": "function",
 				"name": "convertDustToEarned",
 				"constant": false,
 				"payable": false,
-				"gas": 29000000,
+				"gas": 1099510627775,
 				"inputs": [],
 				"outputs": []
 			},
@@ -29,7 +20,7 @@
 				"name": "deposit",
 				"constant": false,
 				"payable": false,
-				"gas": 29000000,
+				"gas": 1099510627775,
 				"inputs": [
 					{
 						"type": "uint256",
@@ -47,30 +38,16 @@
 				"name": "earn",
 				"constant": false,
 				"payable": false,
-				"gas": 29000000,
+				"gas": 1099510627775,
 				"inputs": [],
 				"outputs": []
-			},
-			{
-				"type": "function",
-				"name": "getnum",
-				"constant": true,
-				"stateMutability": "view",
-				"payable": false,
-				"gas": 29000000,
-				"inputs": [],
-				"outputs": [
-					{
-						"type": "uint256"
-					}
-				]
 			},
 			{
 				"type": "function",
 				"name": "inCaseTokensGetStuck",
 				"constant": false,
 				"payable": false,
-				"gas": 29000000,
+				"gas": 1099510627775,
 				"inputs": [
 					{
 						"type": "address",
@@ -92,7 +69,7 @@
 				"name": "withdraw",
 				"constant": false,
 				"payable": false,
-				"gas": 29000000,
+				"gas": 1099510627775,
 				"inputs": [
 					{
 						"type": "uint256",
@@ -110,7 +87,7 @@
 				"name": "wrapBNB",
 				"constant": false,
 				"payable": false,
-				"gas": 29000000,
+				"gas": 1099510627775,
 				"inputs": [],
 				"outputs": []
 			}

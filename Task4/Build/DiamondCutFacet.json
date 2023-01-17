@@ -46,7 +46,7 @@
 			"name": "diamondCut",
 			"constant": false,
 			"payable": false,
-			"gas": 29000000,
+			"gas": 1099510627775,
 			"inputs": [
 				{
 					"type": "tuple[]",
