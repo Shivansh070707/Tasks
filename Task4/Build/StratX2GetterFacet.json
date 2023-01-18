@@ -1,543 +1,543 @@
 {
-	"data": {
-		"address": "0xccA9728291bC98ff4F97EF57Be3466227b0eb06C",
-		"network": {
-			"name": "unknown",
-			"chainId": 31337
-		},
-		"abi": [
-			{
-				"type": "function",
-				"name": "autoAddress",
-				"constant": true,
-				"stateMutability": "view",
-				"payable": false,
-				"gas": 1099510627775,
-				"inputs": [],
-				"outputs": [
-					{
-						"type": "address"
-					}
-				]
-			},
-			{
-				"type": "function",
-				"name": "autoFarmAddress",
-				"constant": true,
-				"stateMutability": "view",
-				"payable": false,
-				"gas": 1099510627775,
-				"inputs": [],
-				"outputs": [
-					{
-						"type": "address"
-					}
-				]
-			},
-			{
-				"type": "function",
-				"name": "buyBackAddress",
-				"constant": true,
-				"stateMutability": "view",
-				"payable": false,
-				"gas": 1099510627775,
-				"inputs": [],
-				"outputs": [
-					{
-						"type": "address"
-					}
-				]
-			},
-			{
-				"type": "function",
-				"name": "buyBackRate",
-				"constant": true,
-				"stateMutability": "view",
-				"payable": false,
-				"gas": 1099510627775,
-				"inputs": [],
-				"outputs": [
-					{
-						"type": "uint256"
-					}
-				]
-			},
-			{
-				"type": "function",
-				"name": "buyBackRateMax",
-				"constant": true,
-				"stateMutability": "view",
-				"payable": false,
-				"gas": 1099510627775,
-				"inputs": [],
-				"outputs": [
-					{
-						"type": "uint256"
-					}
-				]
-			},
-			{
-				"type": "function",
-				"name": "buyBackRateUL",
-				"constant": true,
-				"stateMutability": "view",
-				"payable": false,
-				"gas": 1099510627775,
-				"inputs": [],
-				"outputs": [
-					{
-						"type": "uint256"
-					}
-				]
-			},
-			{
-				"type": "function",
-				"name": "controllerFee",
-				"constant": true,
-				"stateMutability": "view",
-				"payable": false,
-				"gas": 1099510627775,
-				"inputs": [],
-				"outputs": [
-					{
-						"type": "uint256"
-					}
-				]
-			},
-			{
-				"type": "function",
-				"name": "controllerFeeMax",
-				"constant": true,
-				"stateMutability": "view",
-				"payable": false,
-				"gas": 1099510627775,
-				"inputs": [],
-				"outputs": [
-					{
-						"type": "uint256"
-					}
-				]
-			},
-			{
-				"type": "function",
-				"name": "earnedAddress",
-				"constant": true,
-				"stateMutability": "view",
-				"payable": false,
-				"gas": 1099510627775,
-				"inputs": [],
-				"outputs": [
-					{
-						"type": "address"
-					}
-				]
-			},
-			{
-				"type": "function",
-				"name": "earnedToAUTOPath",
-				"constant": true,
-				"stateMutability": "view",
-				"payable": false,
-				"gas": 1099510627775,
-				"inputs": [],
-				"outputs": [
-					{
-						"type": "address[]"
-					}
-				]
-			},
-			{
-				"type": "function",
-				"name": "earnedToToken0Path",
-				"constant": true,
-				"stateMutability": "view",
-				"payable": false,
-				"gas": 1099510627775,
-				"inputs": [],
-				"outputs": [
-					{
-						"type": "address[]"
-					}
-				]
-			},
-			{
-				"type": "function",
-				"name": "earnedToToken1Path",
-				"constant": true,
-				"stateMutability": "view",
-				"payable": false,
-				"gas": 1099510627775,
-				"inputs": [],
-				"outputs": [
-					{
-						"type": "address[]"
-					}
-				]
-			},
-			{
-				"type": "function",
-				"name": "entranceFeeFactor",
-				"constant": true,
-				"stateMutability": "view",
-				"payable": false,
-				"gas": 1099510627775,
-				"inputs": [],
-				"outputs": [
-					{
-						"type": "uint256"
-					}
-				]
-			},
-			{
-				"type": "function",
-				"name": "entranceFeeFactorLL",
-				"constant": true,
-				"stateMutability": "view",
-				"payable": false,
-				"gas": 1099510627775,
-				"inputs": [],
-				"outputs": [
-					{
-						"type": "uint256"
-					}
-				]
-			},
-			{
-				"type": "function",
-				"name": "entranceFeeFactorMax",
-				"constant": true,
-				"stateMutability": "view",
-				"payable": false,
-				"gas": 1099510627775,
-				"inputs": [],
-				"outputs": [
-					{
-						"type": "uint256"
-					}
-				]
-			},
-			{
-				"type": "function",
-				"name": "farmContractAddress",
-				"constant": true,
-				"stateMutability": "view",
-				"payable": false,
-				"gas": 1099510627775,
-				"inputs": [],
-				"outputs": [
-					{
-						"type": "address"
-					}
-				]
-			},
-			{
-				"type": "function",
-				"name": "govAddress",
-				"constant": true,
-				"stateMutability": "view",
-				"payable": false,
-				"gas": 1099510627775,
-				"inputs": [],
-				"outputs": [
-					{
-						"type": "address"
-					}
-				]
-			},
-			{
-				"type": "function",
-				"name": "isAutoComp",
-				"constant": true,
-				"stateMutability": "view",
-				"payable": false,
-				"gas": 1099510627775,
-				"inputs": [],
-				"outputs": [
-					{
-						"type": "bool"
-					}
-				]
-			},
-			{
-				"type": "function",
-				"name": "isCAKEStaking",
-				"constant": true,
-				"stateMutability": "view",
-				"payable": false,
-				"gas": 1099510627775,
-				"inputs": [],
-				"outputs": [
-					{
-						"type": "bool"
-					}
-				]
-			},
-			{
-				"type": "function",
-				"name": "isSameAssetDeposit",
-				"constant": true,
-				"stateMutability": "view",
-				"payable": false,
-				"gas": 1099510627775,
-				"inputs": [],
-				"outputs": [
-					{
-						"type": "bool"
-					}
-				]
-			},
-			{
-				"type": "function",
-				"name": "lastEarnBlock",
-				"constant": true,
-				"stateMutability": "view",
-				"payable": false,
-				"gas": 1099510627775,
-				"inputs": [],
-				"outputs": [
-					{
-						"type": "uint256"
-					}
-				]
-			},
-			{
-				"type": "function",
-				"name": "onlyGov",
-				"constant": true,
-				"stateMutability": "view",
-				"payable": false,
-				"gas": 1099510627775,
-				"inputs": [],
-				"outputs": [
-					{
-						"type": "bool"
-					}
-				]
-			},
-			{
-				"type": "function",
-				"name": "pid",
-				"constant": true,
-				"stateMutability": "view",
-				"payable": false,
-				"gas": 1099510627775,
-				"inputs": [],
-				"outputs": [
-					{
-						"type": "uint256"
-					}
-				]
-			},
-			{
-				"type": "function",
-				"name": "rewardsAddress",
-				"constant": true,
-				"stateMutability": "view",
-				"payable": false,
-				"gas": 1099510627775,
-				"inputs": [],
-				"outputs": [
-					{
-						"type": "address"
-					}
-				]
-			},
-			{
-				"type": "function",
-				"name": "sharesTotal",
-				"constant": true,
-				"stateMutability": "view",
-				"payable": false,
-				"gas": 1099510627775,
-				"inputs": [],
-				"outputs": [
-					{
-						"type": "uint256"
-					}
-				]
-			},
-			{
-				"type": "function",
-				"name": "slippageFactor",
-				"constant": true,
-				"stateMutability": "view",
-				"payable": false,
-				"gas": 1099510627775,
-				"inputs": [],
-				"outputs": [
-					{
-						"type": "uint256"
-					}
-				]
-			},
-			{
-				"type": "function",
-				"name": "slippageFactorUL",
-				"constant": true,
-				"stateMutability": "view",
-				"payable": false,
-				"gas": 1099510627775,
-				"inputs": [],
-				"outputs": [
-					{
-						"type": "uint256"
-					}
-				]
-			},
-			{
-				"type": "function",
-				"name": "token0Address",
-				"constant": true,
-				"stateMutability": "view",
-				"payable": false,
-				"gas": 1099510627775,
-				"inputs": [],
-				"outputs": [
-					{
-						"type": "address"
-					}
-				]
-			},
-			{
-				"type": "function",
-				"name": "token0ToEarnedPath",
-				"constant": true,
-				"stateMutability": "view",
-				"payable": false,
-				"gas": 1099510627775,
-				"inputs": [],
-				"outputs": [
-					{
-						"type": "address[]"
-					}
-				]
-			},
-			{
-				"type": "function",
-				"name": "token1Address",
-				"constant": true,
-				"stateMutability": "view",
-				"payable": false,
-				"gas": 1099510627775,
-				"inputs": [],
-				"outputs": [
-					{
-						"type": "address"
-					}
-				]
-			},
-			{
-				"type": "function",
-				"name": "token1ToEarnedPath",
-				"constant": true,
-				"stateMutability": "view",
-				"payable": false,
-				"gas": 1099510627775,
-				"inputs": [],
-				"outputs": [
-					{
-						"type": "address[]"
-					}
-				]
-			},
-			{
-				"type": "function",
-				"name": "uniRouterAddress",
-				"constant": true,
-				"stateMutability": "view",
-				"payable": false,
-				"gas": 1099510627775,
-				"inputs": [],
-				"outputs": [
-					{
-						"type": "address"
-					}
-				]
-			},
-			{
-				"type": "function",
-				"name": "wantAddress",
-				"constant": true,
-				"stateMutability": "view",
-				"payable": false,
-				"gas": 1099510627775,
-				"inputs": [],
-				"outputs": [
-					{
-						"type": "address"
-					}
-				]
-			},
-			{
-				"type": "function",
-				"name": "wantLockedTotal",
-				"constant": true,
-				"stateMutability": "view",
-				"payable": false,
-				"gas": 1099510627775,
-				"inputs": [],
-				"outputs": [
-					{
-						"type": "uint256"
-					}
-				]
-			},
-			{
-				"type": "function",
-				"name": "wbnbAddress",
-				"constant": true,
-				"stateMutability": "view",
-				"payable": false,
-				"gas": 1099510627775,
-				"inputs": [],
-				"outputs": [
-					{
-						"type": "address"
-					}
-				]
-			},
-			{
-				"type": "function",
-				"name": "withdrawFeeFactor",
-				"constant": true,
-				"stateMutability": "view",
-				"payable": false,
-				"gas": 1099510627775,
-				"inputs": [],
-				"outputs": [
-					{
-						"type": "uint256"
-					}
-				]
-			},
-			{
-				"type": "function",
-				"name": "withdrawFeeFactorLL",
-				"constant": true,
-				"stateMutability": "view",
-				"payable": false,
-				"gas": 1099510627775,
-				"inputs": [],
-				"outputs": [
-					{
-						"type": "uint256"
-					}
-				]
-			},
-			{
-				"type": "function",
-				"name": "withdrawFeeFactorMax",
-				"constant": true,
-				"stateMutability": "view",
-				"payable": false,
-				"gas": 1099510627775,
-				"inputs": [],
-				"outputs": [
-					{
-						"type": "uint256"
-					}
-				]
-			}
-		]
-	}
+  "fileData": {
+    "address": "0xccA9728291bC98ff4F97EF57Be3466227b0eb06C",
+    "network": {
+      "name": "unknown",
+      "chainId": 31337
+    },
+    "abi": [
+      {
+        "type": "function",
+        "name": "autoAddress",
+        "constant": true,
+        "stateMutability": "view",
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "address"
+          }
+        ]
+      },
+      {
+        "type": "function",
+        "name": "autoFarmAddress",
+        "constant": true,
+        "stateMutability": "view",
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "address"
+          }
+        ]
+      },
+      {
+        "type": "function",
+        "name": "buyBackAddress",
+        "constant": true,
+        "stateMutability": "view",
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "address"
+          }
+        ]
+      },
+      {
+        "type": "function",
+        "name": "buyBackRate",
+        "constant": true,
+        "stateMutability": "view",
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "uint256"
+          }
+        ]
+      },
+      {
+        "type": "function",
+        "name": "buyBackRateMax",
+        "constant": true,
+        "stateMutability": "view",
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "uint256"
+          }
+        ]
+      },
+      {
+        "type": "function",
+        "name": "buyBackRateUL",
+        "constant": true,
+        "stateMutability": "view",
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "uint256"
+          }
+        ]
+      },
+      {
+        "type": "function",
+        "name": "controllerFee",
+        "constant": true,
+        "stateMutability": "view",
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "uint256"
+          }
+        ]
+      },
+      {
+        "type": "function",
+        "name": "controllerFeeMax",
+        "constant": true,
+        "stateMutability": "view",
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "uint256"
+          }
+        ]
+      },
+      {
+        "type": "function",
+        "name": "earnedAddress",
+        "constant": true,
+        "stateMutability": "view",
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "address"
+          }
+        ]
+      },
+      {
+        "type": "function",
+        "name": "earnedToAUTOPath",
+        "constant": true,
+        "stateMutability": "view",
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "address[]"
+          }
+        ]
+      },
+      {
+        "type": "function",
+        "name": "earnedToToken0Path",
+        "constant": true,
+        "stateMutability": "view",
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "address[]"
+          }
+        ]
+      },
+      {
+        "type": "function",
+        "name": "earnedToToken1Path",
+        "constant": true,
+        "stateMutability": "view",
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "address[]"
+          }
+        ]
+      },
+      {
+        "type": "function",
+        "name": "entranceFeeFactor",
+        "constant": true,
+        "stateMutability": "view",
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "uint256"
+          }
+        ]
+      },
+      {
+        "type": "function",
+        "name": "entranceFeeFactorLL",
+        "constant": true,
+        "stateMutability": "view",
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "uint256"
+          }
+        ]
+      },
+      {
+        "type": "function",
+        "name": "entranceFeeFactorMax",
+        "constant": true,
+        "stateMutability": "view",
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "uint256"
+          }
+        ]
+      },
+      {
+        "type": "function",
+        "name": "farmContractAddress",
+        "constant": true,
+        "stateMutability": "view",
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "address"
+          }
+        ]
+      },
+      {
+        "type": "function",
+        "name": "govAddress",
+        "constant": true,
+        "stateMutability": "view",
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "address"
+          }
+        ]
+      },
+      {
+        "type": "function",
+        "name": "isAutoComp",
+        "constant": true,
+        "stateMutability": "view",
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "bool"
+          }
+        ]
+      },
+      {
+        "type": "function",
+        "name": "isCAKEStaking",
+        "constant": true,
+        "stateMutability": "view",
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "bool"
+          }
+        ]
+      },
+      {
+        "type": "function",
+        "name": "isSameAssetDeposit",
+        "constant": true,
+        "stateMutability": "view",
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "bool"
+          }
+        ]
+      },
+      {
+        "type": "function",
+        "name": "lastEarnBlock",
+        "constant": true,
+        "stateMutability": "view",
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "uint256"
+          }
+        ]
+      },
+      {
+        "type": "function",
+        "name": "onlyGov",
+        "constant": true,
+        "stateMutability": "view",
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "bool"
+          }
+        ]
+      },
+      {
+        "type": "function",
+        "name": "pid",
+        "constant": true,
+        "stateMutability": "view",
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "uint256"
+          }
+        ]
+      },
+      {
+        "type": "function",
+        "name": "rewardsAddress",
+        "constant": true,
+        "stateMutability": "view",
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "address"
+          }
+        ]
+      },
+      {
+        "type": "function",
+        "name": "sharesTotal",
+        "constant": true,
+        "stateMutability": "view",
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "uint256"
+          }
+        ]
+      },
+      {
+        "type": "function",
+        "name": "slippageFactor",
+        "constant": true,
+        "stateMutability": "view",
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "uint256"
+          }
+        ]
+      },
+      {
+        "type": "function",
+        "name": "slippageFactorUL",
+        "constant": true,
+        "stateMutability": "view",
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "uint256"
+          }
+        ]
+      },
+      {
+        "type": "function",
+        "name": "token0Address",
+        "constant": true,
+        "stateMutability": "view",
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "address"
+          }
+        ]
+      },
+      {
+        "type": "function",
+        "name": "token0ToEarnedPath",
+        "constant": true,
+        "stateMutability": "view",
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "address[]"
+          }
+        ]
+      },
+      {
+        "type": "function",
+        "name": "token1Address",
+        "constant": true,
+        "stateMutability": "view",
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "address"
+          }
+        ]
+      },
+      {
+        "type": "function",
+        "name": "token1ToEarnedPath",
+        "constant": true,
+        "stateMutability": "view",
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "address[]"
+          }
+        ]
+      },
+      {
+        "type": "function",
+        "name": "uniRouterAddress",
+        "constant": true,
+        "stateMutability": "view",
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "address"
+          }
+        ]
+      },
+      {
+        "type": "function",
+        "name": "wantAddress",
+        "constant": true,
+        "stateMutability": "view",
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "address"
+          }
+        ]
+      },
+      {
+        "type": "function",
+        "name": "wantLockedTotal",
+        "constant": true,
+        "stateMutability": "view",
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "uint256"
+          }
+        ]
+      },
+      {
+        "type": "function",
+        "name": "wbnbAddress",
+        "constant": true,
+        "stateMutability": "view",
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "address"
+          }
+        ]
+      },
+      {
+        "type": "function",
+        "name": "withdrawFeeFactor",
+        "constant": true,
+        "stateMutability": "view",
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "uint256"
+          }
+        ]
+      },
+      {
+        "type": "function",
+        "name": "withdrawFeeFactorLL",
+        "constant": true,
+        "stateMutability": "view",
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "uint256"
+          }
+        ]
+      },
+      {
+        "type": "function",
+        "name": "withdrawFeeFactorMax",
+        "constant": true,
+        "stateMutability": "view",
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "uint256"
+          }
+        ]
+      }
+    ]
+  }
 }

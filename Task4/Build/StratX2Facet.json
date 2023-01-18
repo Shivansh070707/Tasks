@@ -1,96 +1,96 @@
 {
-	"data": {
-		"address": "0xDDa0648FA8c9cD593416EC37089C2a2E6060B45c",
-		"network": {
-			"name": "unknown",
-			"chainId": 31337
-		},
-		"abi": [
-			{
-				"type": "function",
-				"name": "convertDustToEarned",
-				"constant": false,
-				"payable": false,
-				"gas": 1099510627775,
-				"inputs": [],
-				"outputs": []
-			},
-			{
-				"type": "function",
-				"name": "deposit",
-				"constant": false,
-				"payable": false,
-				"gas": 1099510627775,
-				"inputs": [
-					{
-						"type": "uint256",
-						"name": "_wantAmt"
-					}
-				],
-				"outputs": [
-					{
-						"type": "uint256"
-					}
-				]
-			},
-			{
-				"type": "function",
-				"name": "earn",
-				"constant": false,
-				"payable": false,
-				"gas": 1099510627775,
-				"inputs": [],
-				"outputs": []
-			},
-			{
-				"type": "function",
-				"name": "inCaseTokensGetStuck",
-				"constant": false,
-				"payable": false,
-				"gas": 1099510627775,
-				"inputs": [
-					{
-						"type": "address",
-						"name": "_token"
-					},
-					{
-						"type": "uint256",
-						"name": "_amount"
-					},
-					{
-						"type": "address",
-						"name": "_to"
-					}
-				],
-				"outputs": []
-			},
-			{
-				"type": "function",
-				"name": "withdraw",
-				"constant": false,
-				"payable": false,
-				"gas": 1099510627775,
-				"inputs": [
-					{
-						"type": "uint256",
-						"name": "_wantAmt"
-					}
-				],
-				"outputs": [
-					{
-						"type": "uint256"
-					}
-				]
-			},
-			{
-				"type": "function",
-				"name": "wrapBNB",
-				"constant": false,
-				"payable": false,
-				"gas": 1099510627775,
-				"inputs": [],
-				"outputs": []
-			}
-		]
-	}
+  "fileData": {
+    "address": "0xDDa0648FA8c9cD593416EC37089C2a2E6060B45c",
+    "network": {
+      "name": "unknown",
+      "chainId": 31337
+    },
+    "abi": [
+      {
+        "type": "function",
+        "name": "convertDustToEarned",
+        "constant": false,
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [],
+        "outputs": []
+      },
+      {
+        "type": "function",
+        "name": "deposit",
+        "constant": false,
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [
+          {
+            "type": "uint256",
+            "name": "_wantAmt"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "uint256"
+          }
+        ]
+      },
+      {
+        "type": "function",
+        "name": "earn",
+        "constant": false,
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [],
+        "outputs": []
+      },
+      {
+        "type": "function",
+        "name": "inCaseTokensGetStuck",
+        "constant": false,
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [
+          {
+            "type": "address",
+            "name": "_token"
+          },
+          {
+            "type": "uint256",
+            "name": "_amount"
+          },
+          {
+            "type": "address",
+            "name": "_to"
+          }
+        ],
+        "outputs": []
+      },
+      {
+        "type": "function",
+        "name": "withdraw",
+        "constant": false,
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [
+          {
+            "type": "uint256",
+            "name": "_wantAmt"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "uint256"
+          }
+        ]
+      },
+      {
+        "type": "function",
+        "name": "wrapBNB",
+        "constant": false,
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [],
+        "outputs": []
+      }
+    ]
+  }
 }
