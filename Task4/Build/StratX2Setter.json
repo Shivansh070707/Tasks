@@ -1,221 +1,221 @@
 {
-	"data": {
-		"address": "0xdb54fa574a3e8c6aC784e1a5cdB575A737622CFf",
-		"network": {
-			"name": "unknown",
-			"chainId": 31337
-		},
-		"abi": [
-			{
-				"type": "event",
-				"anonymous": false,
-				"name": "SetBuyBackAddress",
-				"inputs": [
-					{
-						"type": "address",
-						"name": "_buyBackAddress",
-						"indexed": false
-					}
-				]
-			},
-			{
-				"type": "event",
-				"anonymous": false,
-				"name": "SetGov",
-				"inputs": [
-					{
-						"type": "address",
-						"name": "_govAddress",
-						"indexed": false
-					}
-				]
-			},
-			{
-				"type": "event",
-				"anonymous": false,
-				"name": "SetOnlyGov",
-				"inputs": [
-					{
-						"type": "bool",
-						"name": "_onlyGov",
-						"indexed": false
-					}
-				]
-			},
-			{
-				"type": "event",
-				"anonymous": false,
-				"name": "SetRewardsAddress",
-				"inputs": [
-					{
-						"type": "address",
-						"name": "_rewardsAddress",
-						"indexed": false
-					}
-				]
-			},
-			{
-				"type": "event",
-				"anonymous": false,
-				"name": "SetSettings",
-				"inputs": [
-					{
-						"type": "uint256",
-						"name": "_entranceFeeFactor",
-						"indexed": false
-					},
-					{
-						"type": "uint256",
-						"name": "_withdrawFeeFactor",
-						"indexed": false
-					},
-					{
-						"type": "uint256",
-						"name": "_controllerFee",
-						"indexed": false
-					},
-					{
-						"type": "uint256",
-						"name": "_buyBackRate",
-						"indexed": false
-					},
-					{
-						"type": "uint256",
-						"name": "_slippageFactor",
-						"indexed": false
-					}
-				]
-			},
-			{
-				"type": "event",
-				"anonymous": false,
-				"name": "SetUniRouterAddress",
-				"inputs": [
-					{
-						"type": "address",
-						"name": "_uniRouterAddress",
-						"indexed": false
-					}
-				]
-			},
-			{
-				"type": "function",
-				"name": "pause",
-				"constant": false,
-				"payable": false,
-				"gas": 1099510627775,
-				"inputs": [],
-				"outputs": []
-			},
-			{
-				"type": "function",
-				"name": "setBuyBackAddress",
-				"constant": false,
-				"payable": false,
-				"gas": 1099510627775,
-				"inputs": [
-					{
-						"type": "address",
-						"name": "_buyBackAddress"
-					}
-				],
-				"outputs": []
-			},
-			{
-				"type": "function",
-				"name": "setGov",
-				"constant": false,
-				"payable": false,
-				"gas": 1099510627775,
-				"inputs": [
-					{
-						"type": "address",
-						"name": "_govAddress"
-					}
-				],
-				"outputs": []
-			},
-			{
-				"type": "function",
-				"name": "setOnlyGov",
-				"constant": false,
-				"payable": false,
-				"gas": 1099510627775,
-				"inputs": [
-					{
-						"type": "bool",
-						"name": "_onlyGov"
-					}
-				],
-				"outputs": []
-			},
-			{
-				"type": "function",
-				"name": "setRewardsAddress",
-				"constant": false,
-				"payable": false,
-				"gas": 1099510627775,
-				"inputs": [
-					{
-						"type": "address",
-						"name": "_rewardsAddress"
-					}
-				],
-				"outputs": []
-			},
-			{
-				"type": "function",
-				"name": "setSettings",
-				"constant": false,
-				"payable": false,
-				"gas": 1099510627775,
-				"inputs": [
-					{
-						"type": "uint256",
-						"name": "_entranceFeeFactor"
-					},
-					{
-						"type": "uint256",
-						"name": "_withdrawFeeFactor"
-					},
-					{
-						"type": "uint256",
-						"name": "_controllerFee"
-					},
-					{
-						"type": "uint256",
-						"name": "_buyBackRate"
-					},
-					{
-						"type": "uint256",
-						"name": "_slippageFactor"
-					}
-				],
-				"outputs": []
-			},
-			{
-				"type": "function",
-				"name": "setUniRouterAddress",
-				"constant": false,
-				"payable": false,
-				"gas": 1099510627775,
-				"inputs": [
-					{
-						"type": "address",
-						"name": "_uniRouterAddress"
-					}
-				],
-				"outputs": []
-			},
-			{
-				"type": "function",
-				"name": "unpause",
-				"constant": false,
-				"payable": false,
-				"gas": 1099510627775,
-				"inputs": [],
-				"outputs": []
-			}
-		]
-	}
+  "fileData": {
+    "address": "0xdb54fa574a3e8c6aC784e1a5cdB575A737622CFf",
+    "network": {
+      "name": "unknown",
+      "chainId": 31337
+    },
+    "abi": [
+      {
+        "type": "event",
+        "anonymous": false,
+        "name": "SetBuyBackAddress",
+        "inputs": [
+          {
+            "type": "address",
+            "name": "_buyBackAddress",
+            "indexed": false
+          }
+        ]
+      },
+      {
+        "type": "event",
+        "anonymous": false,
+        "name": "SetGov",
+        "inputs": [
+          {
+            "type": "address",
+            "name": "_govAddress",
+            "indexed": false
+          }
+        ]
+      },
+      {
+        "type": "event",
+        "anonymous": false,
+        "name": "SetOnlyGov",
+        "inputs": [
+          {
+            "type": "bool",
+            "name": "_onlyGov",
+            "indexed": false
+          }
+        ]
+      },
+      {
+        "type": "event",
+        "anonymous": false,
+        "name": "SetRewardsAddress",
+        "inputs": [
+          {
+            "type": "address",
+            "name": "_rewardsAddress",
+            "indexed": false
+          }
+        ]
+      },
+      {
+        "type": "event",
+        "anonymous": false,
+        "name": "SetSettings",
+        "inputs": [
+          {
+            "type": "uint256",
+            "name": "_entranceFeeFactor",
+            "indexed": false
+          },
+          {
+            "type": "uint256",
+            "name": "_withdrawFeeFactor",
+            "indexed": false
+          },
+          {
+            "type": "uint256",
+            "name": "_controllerFee",
+            "indexed": false
+          },
+          {
+            "type": "uint256",
+            "name": "_buyBackRate",
+            "indexed": false
+          },
+          {
+            "type": "uint256",
+            "name": "_slippageFactor",
+            "indexed": false
+          }
+        ]
+      },
+      {
+        "type": "event",
+        "anonymous": false,
+        "name": "SetUniRouterAddress",
+        "inputs": [
+          {
+            "type": "address",
+            "name": "_uniRouterAddress",
+            "indexed": false
+          }
+        ]
+      },
+      {
+        "type": "function",
+        "name": "pause",
+        "constant": false,
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [],
+        "outputs": []
+      },
+      {
+        "type": "function",
+        "name": "setBuyBackAddress",
+        "constant": false,
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [
+          {
+            "type": "address",
+            "name": "_buyBackAddress"
+          }
+        ],
+        "outputs": []
+      },
+      {
+        "type": "function",
+        "name": "setGov",
+        "constant": false,
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [
+          {
+            "type": "address",
+            "name": "_govAddress"
+          }
+        ],
+        "outputs": []
+      },
+      {
+        "type": "function",
+        "name": "setOnlyGov",
+        "constant": false,
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [
+          {
+            "type": "bool",
+            "name": "_onlyGov"
+          }
+        ],
+        "outputs": []
+      },
+      {
+        "type": "function",
+        "name": "setRewardsAddress",
+        "constant": false,
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [
+          {
+            "type": "address",
+            "name": "_rewardsAddress"
+          }
+        ],
+        "outputs": []
+      },
+      {
+        "type": "function",
+        "name": "setSettings",
+        "constant": false,
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [
+          {
+            "type": "uint256",
+            "name": "_entranceFeeFactor"
+          },
+          {
+            "type": "uint256",
+            "name": "_withdrawFeeFactor"
+          },
+          {
+            "type": "uint256",
+            "name": "_controllerFee"
+          },
+          {
+            "type": "uint256",
+            "name": "_buyBackRate"
+          },
+          {
+            "type": "uint256",
+            "name": "_slippageFactor"
+          }
+        ],
+        "outputs": []
+      },
+      {
+        "type": "function",
+        "name": "setUniRouterAddress",
+        "constant": false,
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [
+          {
+            "type": "address",
+            "name": "_uniRouterAddress"
+          }
+        ],
+        "outputs": []
+      },
+      {
+        "type": "function",
+        "name": "unpause",
+        "constant": false,
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [],
+        "outputs": []
+      }
+    ]
+  }
 }

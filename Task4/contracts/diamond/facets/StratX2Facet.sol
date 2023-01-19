@@ -34,8 +34,6 @@ contract StratX2Facet is ReentrancyGuard {
         } else {
             s.wantLockedTotal = s.wantLockedTotal + (_wantAmt);
         }
-        s.lock = 0;
-
         return sharesAdded;
     }
 

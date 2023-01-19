@@ -29,13 +29,13 @@ describe('Test', () => {
   let facetAddresses: string[]; // DiamondCutFacet, DiamondLoupeFacet, StratX2Facet
 
   before(async () => {
-    let x = await deployDiamond();
-    farmA = x.farmA;
-    stratB = x.stratB;
-    want = x.want;
-    autoV21 = x.autoV21;
-    owner = x.owner;
-    diamondAddress = x.diamondAddress;
+    let data = await deployDiamond();
+    farmA = data.farmA;
+    stratB = data.stratB;
+    want = data.want;
+    autoV21 = data.autoV21;
+    owner = data.owner;
+    diamondAddress = data.diamondAddress;
 
     diamondCutFacet = await ethers.getContractAt(
       'DiamondCutFacet',
@@ -223,8 +223,8 @@ describe('Test', () => {
 
     //   let receipt = await tx.wait();
     //   console.log(
-    //     receipt.events?.filter((x) => {
-    //       return x.event == 'Response';
+    //     receipt.events?.filter((data) => {
+    //       return data.event == 'Response';
     //     })
     //   );
     //   console.log(await stratx2.getnum());

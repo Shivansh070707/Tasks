@@ -11,9 +11,9 @@ export async function deploy() {
   let stratx2Settings: Contract;
   let stratx2getter: Contract;
 
-  let x = await deployDiamond();
+  let data = await deployDiamond();
 
-  diamondAddress = x.diamondAddress;
+  diamondAddress = data.diamondAddress;
 
   diamondCutFacet = await ethers.getContractAt(
     'DiamondCutFacet',
