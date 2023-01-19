@@ -3,7 +3,7 @@
 pragma solidity 0.6.12;
 
 import "./helpers/ERC20.sol";
-
+import "hardhat/console.sol";
 import "./libraries/Address.sol";
 
 import "./libraries/SafeERC20.sol";
@@ -103,14 +103,10 @@ abstract contract StratX2 is Ownable, ReentrancyGuard, Pausable {
     }
 
     // Receives new deposits from user
-    function deposit(address _userAddress, uint256 _wantAmt)
-        public
-        virtual
-        onlyOwner
-        nonReentrant
-        whenNotPaused
-        returns (uint256)
-    {
+    function deposit(
+        address _userAddress,
+        uint256 _wantAmt
+    ) public virtual onlyOwner nonReentrant whenNotPaused returns (uint256) {
         IERC20(wantAddress).safeTransferFrom(
             address(msg.sender),
             address(this),
@@ -161,13 +157,10 @@ abstract contract StratX2 is Ownable, ReentrancyGuard, Pausable {
         }
     }
 
-    function withdraw(address _userAddress, uint256 _wantAmt)
-        public
-        virtual
-        onlyOwner
-        nonReentrant
-        returns (uint256)
-    {
+    function withdraw(
+        address _userAddress,
+        uint256 _wantAmt
+    ) public virtual onlyOwner nonReentrant returns (uint256) {
         require(_wantAmt > 0, "_wantAmt <= 0");
 
         uint256 sharesRemoved = _wantAmt.mul(sharesTotal).div(wantLockedTotal);
@@ -221,6 +214,7 @@ abstract contract StratX2 is Ownable, ReentrancyGuard, Pausable {
 
         // Converts farm tokens into want tokens
         uint256 earnedAmt = IERC20(earnedAddress).balanceOf(address(this));
+        console.log(earnedAmt, "Earned Amount");
 
         earnedAmt = distributeFees(earnedAmt);
         earnedAmt = buyBack(earnedAmt);
@@ -318,16 +312,15 @@ abstract contract StratX2 is Ownable, ReentrancyGuard, Pausable {
         return _earnedAmt.sub(buyBackAmt);
     }
 
-    function distributeFees(uint256 _earnedAmt)
-        internal
-        virtual
-        returns (uint256)
-    {
+    function distributeFees(
+        uint256 _earnedAmt
+    ) internal virtual returns (uint256) {
         if (_earnedAmt > 0) {
             // Performance fee
             if (controllerFee > 0) {
-                uint256 fee =
-                    _earnedAmt.mul(controllerFee).div(controllerFeeMax);
+                uint256 fee = _earnedAmt.mul(controllerFee).div(
+                    controllerFeeMax
+                );
                 IERC20(earnedAddress).safeTransfer(rewardsAddress, fee);
                 _earnedAmt = _earnedAmt.sub(fee);
             }
@@ -447,29 +440,23 @@ abstract contract StratX2 is Ownable, ReentrancyGuard, Pausable {
         emit SetOnlyGov(_onlyGov);
     }
 
-    function setUniRouterAddress(address _uniRouterAddress)
-        public
-        virtual
-        onlyAllowGov
-    {
+    function setUniRouterAddress(
+        address _uniRouterAddress
+    ) public virtual onlyAllowGov {
         uniRouterAddress = _uniRouterAddress;
         emit SetUniRouterAddress(_uniRouterAddress);
     }
 
-    function setBuyBackAddress(address _buyBackAddress)
-        public
-        virtual
-        onlyAllowGov
-    {
+    function setBuyBackAddress(
+        address _buyBackAddress
+    ) public virtual onlyAllowGov {
         buyBackAddress = _buyBackAddress;
         emit SetBuyBackAddress(_buyBackAddress);
     }
 
-    function setRewardsAddress(address _rewardsAddress)
-        public
-        virtual
-        onlyAllowGov
-    {
+    function setRewardsAddress(
+        address _rewardsAddress
+    ) public virtual onlyAllowGov {
         rewardsAddress = _rewardsAddress;
         emit SetRewardsAddress(_rewardsAddress);
     }
@@ -504,17 +491,17 @@ abstract contract StratX2 is Ownable, ReentrancyGuard, Pausable {
         address _to,
         uint256 _deadline
     ) internal virtual {
-        uint256[] memory amounts =
-            IPancakeRouter02(_uniRouterAddress).getAmountsOut(_amountIn, _path);
+        uint256[] memory amounts = IPancakeRouter02(_uniRouterAddress)
+            .getAmountsOut(_amountIn, _path);
         uint256 amountOut = amounts[amounts.length.sub(1)];
 
         IPancakeRouter02(_uniRouterAddress)
             .swapExactTokensForTokensSupportingFeeOnTransferTokens(
-            _amountIn,
-            amountOut.mul(_slippageFactor).div(1000),
-            _path,
-            _to,
-            _deadline
-        );
+                _amountIn,
+                amountOut.mul(_slippageFactor).div(1000),
+                _path,
+                _to,
+                _deadline
+            );
     }
 }

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 pragma solidity 0.6.12;
 
 import "./Context.sol";
@@ -84,11 +85,10 @@ abstract contract AccessControl is Context {
      * https://forum.openzeppelin.com/t/iterating-over-elements-on-enumerableset-in-openzeppelin-contracts/2296[forum post]
      * for more information.
      */
-    function getRoleMember(bytes32 role, uint256 index)
-        public
-        view
-        returns (address)
-    {
+    function getRoleMember(
+        bytes32 role,
+        uint256 index
+    ) public view returns (address) {
         return _roles[role].members.at(index);
     }
 

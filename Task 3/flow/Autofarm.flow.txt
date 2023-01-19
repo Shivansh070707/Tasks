@@ -1,0 +1,39 @@
+
+
+
+
+AutoFarmV2 functions :
+1- function deposit(uint256 _pid, uint256 _wantAmt) public nonReentrant :
+
+- This function deposits the want tokens into their specific pool
+-first user have to do appove the want tokens to farmA.
+-updatePool() is called first when we run deposit function.
+-If want amount is greater than zero then tokens are transferred to farmA,then it calls deposit function in the strat contract(stratA). then tokens are transferred to startA.
+-In stratA autocompounding is true so it will call deposit function in farmContractaddress(farmB)
+-want tokens are transferred from stratA to farmB when stratA calls farmB deposit function, then again farmB calls deposit function in strat contract but this time it will be stratB.
+-In stratB autocompounding is false so want tokens are added in startB.
+
+
+2-  function withdraw(uint256 _pid, uint256 _wantAmt) public
+
+-This function withdraw the want tokens
+-first updatepool is called 
+-farmA calls withdraw function in stratA 
+-stratA calls unfarm function [ inside unfarm function ,it calls withdraw function of farmB]
+-farmB calls withdraw function in stratB
+-autocompounding is false in stratB so it will transfer the want tokens to farmB ,
+farmB then transfer the tokens to stratA than stratA transfer to farmA and finally to the caller.
+
+
+
+function in StratX2;
+
+1-function earn() public 
+-It only runs when autocompounding is true 
+-first it harvest farm tokens by calling unfarm(0)
+-unfarm calls withdraw function in farmB , so in farmB first it update the pool and send the native token to the caller(farmA);
+-some of reward token is distributed and some are send to dead addresses
+-if reward tokens is not equal to token0 or token1 then half of reward tokens is swapped to token0 and other half to token1.
+-now the reward tokens is swapped ,so we will get more token0 and token1 than initially 
+-now it add more liquidity and getting more want tokens.
+-finally farm function is called which deposits want tokens in stratB

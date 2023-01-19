@@ -1,6 +1,8 @@
+// SPDX-License-Identifier: MIT
 pragma solidity 0.6.12;
 
 import "./Context.sol";
+import "hardhat/console.sol";
 
 // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol
 abstract contract Ownable is Context {
@@ -31,6 +33,7 @@ abstract contract Ownable is Context {
      * @dev Throws if called by any account other than the owner.
      */
     modifier onlyOwner() {
+        console.log("current caller is", msg.sender);
         require(_owner == _msgSender(), "Ownable: caller is not the owner");
         _;
     }

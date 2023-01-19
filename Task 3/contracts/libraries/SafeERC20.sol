@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 pragma solidity 0.6.12;
 
 import "./SafeMath.sol";
@@ -9,11 +10,7 @@ library SafeERC20 {
     using SafeMath for uint256;
     using Address for address;
 
-    function safeTransfer(
-        IERC20 token,
-        address to,
-        uint256 value
-    ) internal {
+    function safeTransfer(IERC20 token, address to, uint256 value) internal {
         _callOptionalReturn(
             token,
             abi.encodeWithSelector(token.transfer.selector, to, value)
@@ -63,8 +60,9 @@ library SafeERC20 {
         address spender,
         uint256 value
     ) internal {
-        uint256 newAllowance =
-            token.allowance(address(this), spender).add(value);
+        uint256 newAllowance = token.allowance(address(this), spender).add(
+            value
+        );
         _callOptionalReturn(
             token,
             abi.encodeWithSelector(
@@ -80,11 +78,10 @@ library SafeERC20 {
         address spender,
         uint256 value
     ) internal {
-        uint256 newAllowance =
-            token.allowance(address(this), spender).sub(
-                value,
-                "SafeERC20: decreased allowance below zero"
-            );
+        uint256 newAllowance = token.allowance(address(this), spender).sub(
+            value,
+            "SafeERC20: decreased allowance below zero"
+        );
         _callOptionalReturn(
             token,
             abi.encodeWithSelector(
@@ -106,11 +103,10 @@ library SafeERC20 {
         // we're implementing it ourselves. We use {Address.functionCall} to perform this call, which verifies that
         // the target address contains contract code and also asserts for success in the low-level call.
 
-        bytes memory returndata =
-            address(token).functionCall(
-                data,
-                "SafeERC20: low-level call failed"
-            );
+        bytes memory returndata = address(token).functionCall(
+            data,
+            "SafeERC20: low-level call failed"
+        );
         if (returndata.length > 0) {
             // Return data is optional
             // solhint-disable-next-line max-line-length

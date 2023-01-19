@@ -1,0 +1,63 @@
+{
+  "address": "0x20d7B364E8Ed1F4260b5B90C41c2deC3C1F6D367",
+  "network": {
+    "name": "unknown",
+    "chainId": 31337
+  },
+  "abi": [
+    {
+      "type": "function",
+      "name": "init",
+      "constant": false,
+      "payable": false,
+      "gas": 29000000,
+      "inputs": [
+        {
+          "type": "address[]",
+          "name": "_addresses"
+        },
+        {
+          "type": "uint256",
+          "name": "_pid"
+        },
+        {
+          "type": "bool",
+          "name": "_isCAKEStaking"
+        },
+        {
+          "type": "bool",
+          "name": "_isSameAssetDeposit"
+        },
+        {
+          "type": "bool",
+          "name": "_isAutoComp"
+        },
+        {
+          "type": "address[]",
+          "name": "_earnedToAUTOPath"
+        },
+        {
+          "type": "address[]",
+          "name": "_earnedToToken0Path"
+        },
+        {
+          "type": "address[]",
+          "name": "_earnedToToken1Path"
+        },
+        {
+          "type": "address[]",
+          "name": "_token0ToEarnedPath"
+        },
+        {
+          "type": "address[]",
+          "name": "_token1ToEarnedPath"
+        },
+        {
+          "type": "uint256[]",
+          "name": "_num"
+        }
+      ],
+      "outputs": []
+    }
+  ]
+}
