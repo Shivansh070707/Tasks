@@ -1,29 +1,31 @@
 import { ethers, network } from 'hardhat';
-import { AutoFarmV2, StratX2, IERC20 } from '../typechain-types';
+import { AutoFarmV2, StratX2, IERC20 } from '../../typechain-types';
+import { Contract } from 'ethers';
 
 export async function main() {
-  let matic,
-    bitcoin,
-    ada,
-    xrp,
-    autoV2,
-    farmA: AutoFarmV2,
-    farmB: AutoFarmV2,
-    owner,
-    otherAccount,
-    stratA: StratX2,
-    stratB: StratX2,
-    pool,
-    want: IERC20,
-    autoV21,
-    reward;
+  let matic: Contract | IERC20;
+  let bitcoin: Contract | IERC20;
+  let ada: Contract | IERC20;
+  let xrp: Contract | IERC20;
+  let autoV2: Contract | IERC20;
+  let farmA: AutoFarmV2;
+  let farmB: AutoFarmV2;
+  let owner;
+  let otherAccount;
+  let stratA: StratX2;
+  let stratB: StratX2;
+  let pool;
+  let want: Contract | IERC20;
+  let autoV21: Contract | IERC20;
+  let reward;
+
   const address = '0xF977814e90dA44bFA03b6295A0616a897441aceC';
   await network.provider.request({
     method: 'hardhat_impersonateAccount',
     params: [address],
   });
 
-  owner = ethers.provider.getSigner(address);
+  owner = await ethers.getSigner(address);
 
   [reward, otherAccount] = await ethers.getSigners();
 
@@ -179,11 +181,12 @@ export async function main() {
     -Pid should of stratA and poolInfo[pid] of farmB should be same
     -Autocompounding is true ,so the earned address will be the native token of farmB i.e autoV21
      */
+
   const StratA = await ethers.getContractFactory('StratX2_PCS');
   stratA = await StratA.connect(owner).deploy(
     [
       '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c',
-      owner._address,
+      owner.address,
       farmA.address,
       autoV2.address,
       want.address,
@@ -204,16 +207,14 @@ export async function main() {
     [autoV21.address, bitcoin.address],
     [matic.address, autoV21.address],
     [bitcoin.address, autoV21.address],
-    70,
-    150,
-    9990,
-    10000
+    [70, 150, 9990, 10000]
   );
+
   const StratB = await ethers.getContractFactory('StratX2_PCS');
   stratB = await StratB.connect(owner).deploy(
     [
       '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c',
-      owner._address,
+      owner.address,
       farmB.address,
       xrp.address,
       want.address,
@@ -234,19 +235,35 @@ export async function main() {
     [xrp.address, bitcoin.address],
     [matic.address, xrp.address],
     [bitcoin.address, xrp.address],
-    70,
-    150,
-    9990,
-    10000
+    [70, 150, 9990, 10000]
   );
   // Adding First Pool in Both the farms
-  await farmA.connect(owner).add(1, want.address, false, stratA.address);
+  //await farmA.connect(owner).add(1, want.address, false, stratA.address);
   await farmB.connect(owner).add(1, want.address, false, stratB.address);
   //Approving want tokens to farm address
   await want
     .connect(owner)
     .approve(farmA.address, ethers.utils.parseUnits('10', 'ether'));
-  console.log('don');
+
+  console.log(`
+    matic address = ${matic.address};
+    bitcoin address= ${bitcoin.address};
+    ada address=${ada.address};
+    xrp address =${xrp.address}
+    autoV2 address =${autoV2.address},
+    farmA address =${farmA.address};
+    farmB address =${farmB.address};
+    owner address =${owner.address};
+    otherAccount address =${otherAccount.address};
+    stratA address =${stratA.address};
+    stratB address =${stratB.address};
+    pool address =${pool.address};
+    want address =${want.address};
+    reward address =${reward.address};
+    owner want balance =${await want.balanceOf(owner.address)}
+    xrp balance after ${await xrp.balanceOf(owner.address)};
+    
+    `);
   return {
     matic,
     bitcoin,
@@ -268,7 +285,7 @@ export async function main() {
 
 // We recommend this pattern to be able to use async/await everywhere
 // and properly handle errors.
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+// main().catch((error) => {
+//   console.error(error);
+//   process.exitCode = 1;
+// });

@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 import "../libraries/LibDiamond.sol";
 
-contract StratX2Getter {
+contract StratX2GetterFacet {
     function isCAKEStaking() external view returns (bool) {
         LibDiamond.StratX2Storage storage s = LibDiamond.stratX2Storage();
         return s.isCAKEStaking;
@@ -63,7 +63,7 @@ contract StratX2Getter {
         return s.autoFarmAddress;
     }
 
-    function AUTOAddress() external view returns (address) {
+    function autoAddress() external view returns (address) {
         LibDiamond.StratX2Storage storage s = LibDiamond.stratX2Storage();
         return s.AUTOAddress;
     }

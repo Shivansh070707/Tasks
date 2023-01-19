@@ -58,6 +58,7 @@ contract DiamondInit {
         s.isSameAssetDeposit = _isSameAssetDeposit;
 
         s.isAutoComp = _isAutoComp;
+        s._paused = false;
 
         s.uniRouterAddress = _addresses[9];
         s.earnedToAUTOPath = _earnedToAUTOPath;
@@ -74,6 +75,31 @@ contract DiamondInit {
         s.buyBackAddress = _addresses[11];
         s.entranceFeeFactor = _num[2];
         s.withdrawFeeFactor = _num[3];
+        s.onlyGov = true;
+
+        s.lastEarnBlock = 0;
+        s.wantLockedTotal = 0;
+        s.sharesTotal = 0;
+
+        s.controllerFee = 0; // 70;
+        s.controllerFeeMax = 10000; // 100 = 1%
+        s.controllerFeeUL = 300;
+
+        s.buyBackRate = 0; // 250;
+        s.buyBackRateMax = 10000; // 100 = 1%
+        s.buyBackRateUL = 800;
+        s.buyBackAddress = 0x000000000000000000000000000000000000dEaD;
+
+        s.entranceFeeFactor = 9990; // < 0.1% entrance fee - goes to pool + prevents front-running
+        s.entranceFeeFactorMax = 10000;
+        s.entranceFeeFactorLL = 9950; // 0.5% is the max entrance fee settable. LL = lowerlimit
+
+        s.withdrawFeeFactor = 10000; // 0.1% withdraw fee - goes to pool
+        s.withdrawFeeFactorMax = 10000;
+        s.withdrawFeeFactorLL = 9950; // 0.5% is the max entrance fee settable. LL = lowerlimit
+
+        s.slippageFactor = 950; // 5% default slippage tolerance
+        s.slippageFactorUL = 995;
 
         // add your own state variables
         // EIP-2535 specifies that the `diamondCut` function takes two optional
