@@ -54,7 +54,6 @@ contract DiamondInit {
 
         s.farmContractAddress = _addresses[8];
         s.pid = _pid;
-        s.lock = 0;
         s.isCAKEStaking = _isCAKEStaking;
         s.isSameAssetDeposit = _isSameAssetDeposit;
 

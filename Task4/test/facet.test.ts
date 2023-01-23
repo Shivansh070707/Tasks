@@ -29,13 +29,13 @@ describe('Test', () => {
   let facetAddresses: string[]; // DiamondCutFacet, DiamondLoupeFacet, StratX2Facet
 
   before(async () => {
-    let x = await deployDiamond();
-    farmA = x.farmA;
-    stratB = x.stratB;
-    want = x.want;
-    autoV21 = x.autoV21;
-    owner = x.owner;
-    diamondAddress = x.diamondAddress;
+    let data = await deployDiamond();
+    farmA = data.farmA;
+    stratB = data.stratB;
+    want = data.want;
+    autoV21 = data.autoV21;
+    owner = data.owner;
+    diamondAddress = data.diamondAddress;
 
     diamondCutFacet = await ethers.getContractAt(
       'DiamondCutFacet',
@@ -52,10 +52,13 @@ describe('Test', () => {
 
     stratx2 = await ethers.getContractAt('StratX2Facet', diamondAddress);
     stratx2Settings = await ethers.getContractAt(
-      'StratX2Setter',
+      'StratX2SetterFacet',
       diamondAddress
     );
-    stratx2getter = await ethers.getContractAt('StratX2Getter', diamondAddress);
+    stratx2getter = await ethers.getContractAt(
+      'StratX2GetterFacet',
+      diamondAddress
+    );
   });
 
   describe('test - diamond', () => {
@@ -128,10 +131,9 @@ describe('Test', () => {
       await want
         .connect(owner)
         .approve(diamondAddress, ethers.utils.parseUnits('10', 'ether'));
+
       await expect(
-        stratx2
-          .connect(owner)
-          .deposit(owner.address, ethers.utils.parseEther('10'))
+        stratx2.connect(owner).deposit(ethers.utils.parseEther('10'))
       ).to.changeTokenBalances(
         want,
         [owner.address, stratB.address],
@@ -161,9 +163,7 @@ describe('Test', () => {
     });
     it('Should withdraw want tokens and that tokens will be transferred to farmA', async () => {
       await expect(
-        stratx2
-          .connect(owner)
-          .withdraw(owner.address, ethers.utils.parseUnits('1', 'ether'))
+        stratx2.connect(owner).withdraw(ethers.utils.parseUnits('1', 'ether'))
       ).to.changeTokenBalances(
         want,
         [farmA.address, stratB.address],
@@ -207,6 +207,33 @@ describe('Test', () => {
       expect(await stratx2getter.controllerFee()).to.equal(250);
       expect(await stratx2getter.buyBackRate()).to.equal(500);
       expect(await stratx2getter.slippageFactor()).to.equal(500);
+    });
+  });
+  describe('Errors', () => {
+    it('Should throw error when caller is not gov ', async () => {
+      await expect(stratx2Settings.setGov(owner.address)).to.be.revertedWith(
+        '!gov'
+      );
+    });
+    // it('should throw error when enter two fun', async () => {
+    //   let Check = await ethers.getContractFactory('ReentrancyChecker');
+    //   let check = await Check.deploy(diamondAddress);
+    //   await check.attack();
+    //   let tx = await check.attack();
+
+    //   let receipt = await tx.wait();
+    //   console.log(
+    //     receipt.events?.filter((data) => {
+    //       return data.event == 'Response';
+    //     })
+    //   );
+    //   console.log(await stratx2.getnum());
+    // });
+    it('should throw error when paused', async () => {
+      await stratx2Settings.connect(owner).pause();
+      expect(
+        stratx2.connect(owner).deposit(ethers.utils.parseEther('1'))
+      ).to.be.revertedWith('Pausable: paused');
     });
   });
 });

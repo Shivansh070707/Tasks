@@ -34,8 +34,7 @@ library LibDiamond {
         bool _paused;
         bool isCAKEStaking; // only for staking CAKE using pancakeswap's native CAKE staking contract.
         bool isSameAssetDeposit;
-        bool isAutoComp;
-        uint8 lock; // this vault is purely for staking. eg. WBNB-AUTO staking vault.
+        bool isAutoComp; // this vault is purely for staking. eg. WBNB-AUTO staking vault.
         address farmContractAddress; // address of farm, eg, PCS, Thugs etc.
         uint256 pid; // pid of pool in farmContractAddress
         address wantAddress;
@@ -81,17 +80,6 @@ library LibDiamond {
      * @dev Emitted when the pause is lifted by `account`.
      */
     event Unpaused(address account);
-
-    function nonreentrantbefore() internal {
-        StratX2Storage storage s = LibDiamond.stratX2Storage();
-        require(s.lock == 0, "Locked");
-        s.lock = 1;
-    }
-
-    function nonreentrantafter() internal {
-        StratX2Storage storage s = LibDiamond.stratX2Storage();
-        s.lock = 0;
-    }
 
     function _msgSender() internal view returns (address) {
         return msg.sender;

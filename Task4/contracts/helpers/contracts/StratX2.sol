@@ -13,7 +13,6 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "../../diamond/interfaces/IPancakeswapFarm.sol";
 import "../../diamond/interfaces/IPancakeRouter01.sol";
 import "../../diamond/interfaces/IPancakeRouter02.sol";
-import "hardhat/console.sol";
 
 interface IWBNB is IERC20 {
     function deposit() external payable;
@@ -40,7 +39,7 @@ abstract contract StratX2 is Ownable, ReentrancyGuard, Pausable {
 
     address public wbnbAddress;
     address public autoFarmAddress;
-    address public AUTOAddress;
+    address public autoAddress;
     address public govAddress; // timelock contract
     bool public onlyGov = true;
 
@@ -49,25 +48,25 @@ abstract contract StratX2 is Ownable, ReentrancyGuard, Pausable {
     uint256 public sharesTotal = 0;
 
     uint256 public controllerFee = 0; // 70;
-    uint256 public constant controllerFeeMax = 10000; // 100 = 1%
-    uint256 public constant controllerFeeUL = 300;
+    uint256 public constant CONTROLLER_FEE_MAX = 10000; // 100 = 1%
+    uint256 public constant CONTROLLER_FEE_UL = 300;
 
     uint256 public buyBackRate = 0; // 250;
-    uint256 public constant buyBackRateMax = 10000; // 100 = 1%
-    uint256 public constant buyBackRateUL = 800;
+    uint256 public constant BUY_BACK_RATE_MAX = 10000; // 100 = 1%
+    uint256 public constant BUY_BACK_RATE_UL = 800;
     address public buyBackAddress = 0x000000000000000000000000000000000000dEaD;
     address public rewardsAddress;
 
     uint256 public entranceFeeFactor = 9990; // < 0.1% entrance fee - goes to pool + prevents front-running
-    uint256 public constant entranceFeeFactorMax = 10000;
-    uint256 public constant entranceFeeFactorLL = 9950; // 0.5% is the max entrance fee settable. LL = lowerlimit
+    uint256 public constant ENTRANCE_FEE_FACTOR_MAX = 10000;
+    uint256 public constant ENTRANCE_FEE_FACTOR_LL = 9950; // 0.5% is the max entrance fee settable. LL = lowerlimit
 
     uint256 public withdrawFeeFactor = 10000; // 0.1% withdraw fee - goes to pool
-    uint256 public constant withdrawFeeFactorMax = 10000;
-    uint256 public constant withdrawFeeFactorLL = 9950; // 0.5% is the max entrance fee settable. LL = lowerlimit
+    uint256 public constant WITHDRAW_FEE_FACTOR_MAX = 10000;
+    uint256 public constant WITHDRAW_FEE_FACTOR_LL = 9950; // 0.5% is the max entrance fee settable. LL = lowerlimit
 
     uint256 public slippageFactor = 950; // 5% default slippage tolerance
-    uint256 public constant slippageFactorUL = 995;
+    uint256 public constant SLIPPAGE_FEE_FACTOR_UL = 995;
 
     address[] public earnedToAUTOPath;
     address[] public earnedToToken0Path;
@@ -95,8 +94,8 @@ abstract contract StratX2 is Ownable, ReentrancyGuard, Pausable {
     }
 
     // Receives new deposits from user
-    function deposit(address _userAddress, uint256 _wantAmt)
-        public
+    function deposit(uint256 _wantAmt)
+        external
         virtual
         onlyOwner
         nonReentrant
@@ -114,7 +113,7 @@ abstract contract StratX2 is Ownable, ReentrancyGuard, Pausable {
             sharesAdded =
                 (_wantAmt * (sharesTotal) * (entranceFeeFactor)) /
                 (wantLockedTotal) /
-                (entranceFeeFactorMax);
+                (ENTRANCE_FEE_FACTOR_MAX);
         }
         sharesTotal = sharesTotal + (sharesAdded);
 
@@ -127,33 +126,12 @@ abstract contract StratX2 is Ownable, ReentrancyGuard, Pausable {
         return sharesAdded;
     }
 
-    function farm() public virtual nonReentrant {
+    function farm() external virtual nonReentrant {
         _farm();
     }
 
-    function _farm() internal virtual {
-        require(isAutoComp, "!isAutoComp");
-        uint256 wantAmt = IERC20(wantAddress).balanceOf(address(this));
-        wantLockedTotal = wantLockedTotal + (wantAmt);
-        IERC20(wantAddress).safeIncreaseAllowance(farmContractAddress, wantAmt);
-
-        if (isCAKEStaking) {
-            IPancakeswapFarm(farmContractAddress).enterStaking(wantAmt); // Just for CAKE staking, we dont use deposit()
-        } else {
-            IPancakeswapFarm(farmContractAddress).deposit(pid, wantAmt);
-        }
-    }
-
-    function _unfarm(uint256 _wantAmt) internal virtual {
-        if (isCAKEStaking) {
-            IPancakeswapFarm(farmContractAddress).leaveStaking(_wantAmt); // Just for CAKE staking, we dont use withdraw()
-        } else {
-            IPancakeswapFarm(farmContractAddress).withdraw(pid, _wantAmt);
-        }
-    }
-
-    function withdraw(address _userAddress, uint256 _wantAmt)
-        public
+    function withdraw(uint256 _wantAmt)
+        external
         virtual
         onlyOwner
         nonReentrant
@@ -167,10 +145,10 @@ abstract contract StratX2 is Ownable, ReentrancyGuard, Pausable {
         }
         sharesTotal = sharesTotal - (sharesRemoved);
 
-        if (withdrawFeeFactor < withdrawFeeFactorMax) {
+        if (withdrawFeeFactor < WITHDRAW_FEE_FACTOR_MAX) {
             _wantAmt =
                 (_wantAmt * (withdrawFeeFactor)) /
-                (withdrawFeeFactorMax);
+                (WITHDRAW_FEE_FACTOR_MAX);
         }
 
         if (isAutoComp) {
@@ -197,7 +175,7 @@ abstract contract StratX2 is Ownable, ReentrancyGuard, Pausable {
     // 2. Converts farm tokens into want tokens
     // 3. Deposits want tokens
 
-    function earn() public virtual nonReentrant whenNotPaused {
+    function earn() external virtual nonReentrant whenNotPaused {
         require(isAutoComp, "!isAutoComp");
         if (onlyGov) {
             require(msg.sender == govAddress, "!gov");
@@ -213,8 +191,8 @@ abstract contract StratX2 is Ownable, ReentrancyGuard, Pausable {
         // Converts farm tokens into want tokens
         uint256 earnedAmt = IERC20(earnedAddress).balanceOf(address(this));
 
-        earnedAmt = distributeFees(earnedAmt);
-        earnedAmt = buyBack(earnedAmt);
+        earnedAmt = _distributeFees(earnedAmt);
+        earnedAmt = _buyBack(earnedAmt);
 
         if (isCAKEStaking || isSameAssetDeposit) {
             lastEarnBlock = block.number;
@@ -281,53 +259,7 @@ abstract contract StratX2 is Ownable, ReentrancyGuard, Pausable {
         _farm();
     }
 
-    function buyBack(uint256 _earnedAmt) internal virtual returns (uint256) {
-        if (buyBackRate <= 0) {
-            return _earnedAmt;
-        }
-
-        uint256 buyBackAmt = (_earnedAmt * (buyBackRate)) / (buyBackRateMax);
-
-        if (earnedAddress == AUTOAddress) {
-            IERC20(earnedAddress).safeTransfer(buyBackAddress, buyBackAmt);
-        } else {
-            IERC20(earnedAddress).safeIncreaseAllowance(
-                uniRouterAddress,
-                buyBackAmt
-            );
-
-            _safeSwap(
-                uniRouterAddress,
-                buyBackAmt,
-                slippageFactor,
-                earnedToAUTOPath,
-                buyBackAddress,
-                block.timestamp + (600)
-            );
-        }
-
-        return _earnedAmt - (buyBackAmt);
-    }
-
-    function distributeFees(uint256 _earnedAmt)
-        internal
-        virtual
-        returns (uint256)
-    {
-        if (_earnedAmt > 0) {
-            // Performance fee
-            if (controllerFee > 0) {
-                uint256 fee = (_earnedAmt * (controllerFee)) /
-                    (controllerFeeMax);
-                IERC20(earnedAddress).safeTransfer(rewardsAddress, fee);
-                _earnedAmt = _earnedAmt - (fee);
-            }
-        }
-
-        return _earnedAmt;
-    }
-
-    function convertDustToEarned() public virtual whenNotPaused {
+    function convertDustToEarned() external virtual whenNotPaused {
         require(isAutoComp, "!isAutoComp");
         require(!isCAKEStaking, "isCAKEStaking");
 
@@ -372,11 +304,11 @@ abstract contract StratX2 is Ownable, ReentrancyGuard, Pausable {
         }
     }
 
-    function pause() public virtual onlyAllowGov {
+    function pause() external virtual onlyAllowGov {
         _pause();
     }
 
-    function unpause() public virtual onlyAllowGov {
+    function unpause() external virtual onlyAllowGov {
         _unpause();
     }
 
@@ -386,35 +318,35 @@ abstract contract StratX2 is Ownable, ReentrancyGuard, Pausable {
         uint256 _controllerFee,
         uint256 _buyBackRate,
         uint256 _slippageFactor
-    ) public virtual onlyAllowGov {
+    ) external virtual onlyAllowGov {
         require(
-            _entranceFeeFactor >= entranceFeeFactorLL,
+            _entranceFeeFactor >= ENTRANCE_FEE_FACTOR_LL,
             "_entranceFeeFactor too low"
         );
         require(
-            _entranceFeeFactor <= entranceFeeFactorMax,
+            _entranceFeeFactor <= ENTRANCE_FEE_FACTOR_MAX,
             "_entranceFeeFactor too high"
         );
         entranceFeeFactor = _entranceFeeFactor;
 
         require(
-            _withdrawFeeFactor >= withdrawFeeFactorLL,
+            _withdrawFeeFactor >= WITHDRAW_FEE_FACTOR_LL,
             "_withdrawFeeFactor too low"
         );
         require(
-            _withdrawFeeFactor <= withdrawFeeFactorMax,
+            _withdrawFeeFactor <= WITHDRAW_FEE_FACTOR_MAX,
             "_withdrawFeeFactor too high"
         );
         withdrawFeeFactor = _withdrawFeeFactor;
 
-        require(_controllerFee <= controllerFeeUL, "_controllerFee too high");
+        require(_controllerFee <= CONTROLLER_FEE_UL, "_controllerFee too high");
         controllerFee = _controllerFee;
 
-        require(_buyBackRate <= buyBackRateUL, "_buyBackRate too high");
+        require(_buyBackRate <= BUY_BACK_RATE_UL, "_buyBackRate too high");
         buyBackRate = _buyBackRate;
 
         require(
-            _slippageFactor <= slippageFactorUL,
+            _slippageFactor <= SLIPPAGE_FEE_FACTOR_UL,
             "_slippageFactor too high"
         );
         slippageFactor = _slippageFactor;
@@ -428,18 +360,18 @@ abstract contract StratX2 is Ownable, ReentrancyGuard, Pausable {
         );
     }
 
-    function setGov(address _govAddress) public virtual onlyAllowGov {
+    function setGov(address _govAddress) external virtual onlyAllowGov {
         govAddress = _govAddress;
         emit SetGov(_govAddress);
     }
 
-    function setOnlyGov(bool _onlyGov) public virtual onlyAllowGov {
+    function setOnlyGov(bool _onlyGov) external virtual onlyAllowGov {
         onlyGov = _onlyGov;
         emit SetOnlyGov(_onlyGov);
     }
 
     function setUniRouterAddress(address _uniRouterAddress)
-        public
+        external
         virtual
         onlyAllowGov
     {
@@ -448,7 +380,7 @@ abstract contract StratX2 is Ownable, ReentrancyGuard, Pausable {
     }
 
     function setBuyBackAddress(address _buyBackAddress)
-        public
+        external
         virtual
         onlyAllowGov
     {
@@ -457,7 +389,7 @@ abstract contract StratX2 is Ownable, ReentrancyGuard, Pausable {
     }
 
     function setRewardsAddress(address _rewardsAddress)
-        public
+        external
         virtual
         onlyAllowGov
     {
@@ -469,10 +401,14 @@ abstract contract StratX2 is Ownable, ReentrancyGuard, Pausable {
         address _token,
         uint256 _amount,
         address _to
-    ) public virtual onlyAllowGov {
+    ) external virtual onlyAllowGov {
         require(_token != earnedAddress, "!safe");
         require(_token != wantAddress, "!safe");
         IERC20(_token).safeTransfer(_to, _amount);
+    }
+
+    function wrapBNB() external virtual onlyAllowGov {
+        _wrapBNB();
     }
 
     function _wrapBNB() internal virtual {
@@ -483,8 +419,25 @@ abstract contract StratX2 is Ownable, ReentrancyGuard, Pausable {
         }
     }
 
-    function wrapBNB() public virtual onlyAllowGov {
-        _wrapBNB();
+    function _farm() internal virtual {
+        require(isAutoComp, "!isAutoComp");
+        uint256 wantAmt = IERC20(wantAddress).balanceOf(address(this));
+        wantLockedTotal = wantLockedTotal + (wantAmt);
+        IERC20(wantAddress).safeIncreaseAllowance(farmContractAddress, wantAmt);
+
+        if (isCAKEStaking) {
+            IPancakeswapFarm(farmContractAddress).enterStaking(wantAmt); // Just for CAKE staking, we dont use deposit()
+        } else {
+            IPancakeswapFarm(farmContractAddress).deposit(pid, wantAmt);
+        }
+    }
+
+    function _unfarm(uint256 _wantAmt) internal virtual {
+        if (isCAKEStaking) {
+            IPancakeswapFarm(farmContractAddress).leaveStaking(_wantAmt); // Just for CAKE staking, we dont use withdraw()
+        } else {
+            IPancakeswapFarm(farmContractAddress).withdraw(pid, _wantAmt);
+        }
     }
 
     function _safeSwap(
@@ -507,5 +460,51 @@ abstract contract StratX2 is Ownable, ReentrancyGuard, Pausable {
                 _to,
                 _deadline
             );
+    }
+
+    function _distributeFees(uint256 _earnedAmt)
+        internal
+        virtual
+        returns (uint256)
+    {
+        if (_earnedAmt > 0) {
+            // Performance fee
+            if (controllerFee > 0) {
+                uint256 fee = (_earnedAmt * (controllerFee)) /
+                    (CONTROLLER_FEE_MAX);
+                IERC20(earnedAddress).safeTransfer(rewardsAddress, fee);
+                _earnedAmt = _earnedAmt - (fee);
+            }
+        }
+
+        return _earnedAmt;
+    }
+
+    function _buyBack(uint256 _earnedAmt) internal virtual returns (uint256) {
+        if (buyBackRate <= 0) {
+            return _earnedAmt;
+        }
+
+        uint256 buyBackAmt = (_earnedAmt * (buyBackRate)) / (BUY_BACK_RATE_MAX);
+
+        if (earnedAddress == autoAddress) {
+            IERC20(earnedAddress).safeTransfer(buyBackAddress, buyBackAmt);
+        } else {
+            IERC20(earnedAddress).safeIncreaseAllowance(
+                uniRouterAddress,
+                buyBackAmt
+            );
+
+            _safeSwap(
+                uniRouterAddress,
+                buyBackAmt,
+                slippageFactor,
+                earnedToAUTOPath,
+                buyBackAddress,
+                block.timestamp + (600)
+            );
+        }
+
+        return _earnedAmt - (buyBackAmt);
     }
 }
